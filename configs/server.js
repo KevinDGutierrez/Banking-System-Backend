@@ -6,7 +6,8 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { dbConnection } from './mongo.js';
 import limiter from '../src/middlewares/validar-cant-peticiones.js';
-
+import { createAdmin } from '../src/auth/auth.controller.js';
+import authRoutes from '../src/auth/auth.routes.js'
 const middlewares = (app) => {
     app.use(express.urlencoded({ extended: false }));
     app.use(cors());
@@ -17,13 +18,14 @@ const middlewares = (app) => {
 }
 
 const routes = (app) => {
-
+    app.use('/banco/users', authRoutes);
 }
 
 const conectarDB = async () => {
     try {
         await dbConnection();
         console.log('¡¡Conexión a la base de datos exitosa!!');
+        await createAdmin();
     } catch (error) {
         console.error('Error al conectar a la base de datos:', error);
         process.exit(1);
