@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import authAdminModel from "../auth/authAdmin.model";
+import authUserModel from "../auth/authUser.model.js";
 
 
 export const validarJWT = async (req, res, next) => {
@@ -16,7 +16,7 @@ export const validarJWT = async (req, res, next) => {
         
         const { uid } = jwt.verify(token, process.env.SECRETORPRIVATEKEY);
 
-        const user = await authAdminModel.findById(uid);
+        const user = await authUserModel.findById(uid);
 
         if (!user) {
             return res.status(400).json({
@@ -26,7 +26,7 @@ export const validarJWT = async (req, res, next) => {
 
         if (user.status === false) {
             return res.status(401).json({
-                msg: "Invalid token - user with status: false"
+                msg: "Tu cuenta no está activada. Espera la aprobación del administrador"
             })
         }
 

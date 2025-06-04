@@ -8,6 +8,8 @@ import { dbConnection } from './mongo.js';
 import limiter from '../src/middlewares/validar-cant-peticiones.js';
 import { createAdmin } from '../src/auth/auth.controller.js';
 import authRoutes from '../src/auth/auth.routes.js'
+import accountRoutes from '../src/account/account.routes.js';
+import favoritosRoutes from '../src/favoritos/favoritos.routes.js';
 const middlewares = (app) => {
     app.use(express.urlencoded({ extended: false }));
     app.use(cors());
@@ -18,7 +20,9 @@ const middlewares = (app) => {
 }
 
 const routes = (app) => {
-    app.use('/banco/users', authRoutes);
+    app.use('/users', authRoutes);
+    app.use('/cuentas', accountRoutes);
+    app.use('/favoritos', favoritosRoutes);
 }
 
 const conectarDB = async () => {

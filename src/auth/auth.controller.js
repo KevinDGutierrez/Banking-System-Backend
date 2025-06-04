@@ -1,26 +1,30 @@
-import authAdminModel from "./authAdmin.model.js";
+import authUserModel from "./authUser.model.js";
 import { request, response } from "express";
 import { hash, verify } from "argon2";
 import { ingresosCuenta,validarCamposObligatorios, validarCamposEditables
-    , validarPermisoPropietarioOAdmin, validarExistenciaUsuario
+    , validarPermisoPropietarioOAdmin,  validarAprobacionPorAdmin,
+    validarCamposUnicos, validarActivacionCuentaStatus
  } from "../helpers/db-validator-auth.js";
 import { generateJWT } from "../helpers/generate-jwt.js";
+import { sendApprovalEmail } from "../utils/sendEmail.js";
 
 
 
 export const createAdmin = async () => {
     try {
-        const verifyUser = await authAdminModel.findOne({username : "ADMINB"})
+        const verifyUser = await authUserModel.findOne({username : "ADMINB".toLowerCase(), correo : "admin@.com".toLowerCase()});
         
         if (!verifyUser) {
             const encryptedPassword = await hash("ADMINB")
-            const adminUser = new authAdminModel({
+            const adminUser = new authUserModel({
                 username : "ADMINB".toLowerCase(),
+                correo : "admin@.com".toLowerCase(),
                 password : encryptedPassword,
-                role : "ADMIN"
+                role : "ADMIN",
+                status : true, 
             })
 
-            await adminUser.save()
+            await adminUser.save()   
 
             console.log("ADMIN CREADO") 
         } else {
@@ -33,82 +37,139 @@ export const createAdmin = async () => {
 
 
 export const login = async (req, res) => {
-    const {correo, username} = req.body;
+    const { correo, username, password } = req.body;
 
-    try{
+    try {
         const lowerCorreo = correo ? correo.toLowerCase() : null;
         const lowerUsername = username ? username.toLowerCase() : null;
 
-        const user = await authAdminModel.findOne({
-            $or : [
-                {correo : lowerCorreo},
-                {username : lowerUsername}
-            ]
-        })
 
+        const user = await authUserModel.findOne({
+            $or: [
+                { correo: lowerCorreo },
+                { username: lowerUsername }
+            ],
+            
+        });
 
-        const token = await generateJWT(user.id)
+        if (!user) {
+            console.log(user)
+            return res.status(404).json({
+                success: false,
+                msg: "Usuario no encontrado"
+            });
+        }
+
+        await validarActivacionCuentaStatus(user);
+
+          const validPassword = await verify(user.password, password);
+            if (!validPassword) {
+            return res.status(400).json({
+                success: false,
+                msg: "Contraseña incorrecta"
+            });
+        }
+
+        const token = await generateJWT(user._id);
 
         res.status(200).json({
-            succes: true,
-            msg : "Sesion iniciad exitosamente",
-            userDetails : {
-                username : user.username,
-                token : token,
+            success: true,
+            msg: "Sesión iniciada exitosamente",
+            userDetails: {
+                username: user.username,
+                token: token,
+                role: user.role,
             }
-        })
-    } catch {
+        });
+    } catch (error) {
+        console.log(error);
         return res.status(500).json({
             success: false,
             msg: "Error al iniciar sesión",
             error: error.message
-        })
+        });
     }
-}
+};
 
-export const registerCliente = async () => {
+
+export const registerCliente = async (req, res) => {
     try {
         const data = req.body;
+        
 
-        const encryptedPassword = await hash(data.password)
-        const errorCampos = validarCamposObligatorios(data, res);
-        if (errorCampos) return;
-    
-        const errorIngresos = validarIngresos(data.ingresos, res);
-        if (errorIngresos) return;
+         
+        await validarCamposObligatorios(data);
+        await  ingresosCuenta(data.ingresos)
+        await validarCamposUnicos(data);
+
+        const encryptedPassword = await hash(data.password);
 
         const generateAccountNumber = () => {
-            return Math.floor(100000000 + Math.random() * 900000000).toString()
-        }
+            return Math.floor(100000000 + Math.random() * 900000000).toString();
+        };
 
-
-        const cliente = await authAdminModel.create({
-            name : data.name,
-            username : data.username,
-            NoCuenta : generateAccountNumber(),
-            direccion : data.direccion,
-            celular : data.celular,
-            correo : data.correo,
-            password : encryptedPassword(),
-            NameTrabajo : data.NameTrabajo,
-            status : false
+         await authUserModel.create({
+            name: data.name,
+            username: data.username,
+            NoCuenta: generateAccountNumber(),
+            password: encryptedPassword,
+            dpi: data.dpi,
+            direccion: data.direccion,
+            celular: data.celular,
+            correo: data.correo,
+            NameTrabajo: data.NameTrabajo,
+            ingresos: data.ingresos,
+            status: false
         });
 
-        res.status(200) ({
-            msg : "Cliente Registrado",
-            clienteUser : {
-                cliente : cliente
-            }
-        })
+        res.status(200).json({
+            msg: "Cliente Registrado, espere a que un administrador apruebe su cuenta",
+            
+        });
     } catch (error) {
-        console.log(error)
-
+        console.log(error);
         return res.status(500).json({
-            msg : "Registro de Cliente"
-        })
+            msg: "Error en el registro de cliente",
+            error: error.message
+        });
     }
-}
+};
 
+
+export const aprobarCliente = async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        await validarAprobacionPorAdmin(req); 
+
+        const cliente = await authUserModel.findByIdAndUpdate(
+            id,
+            { status: true },
+            { new: true }
+        );
+
+        if (!cliente) {
+            return res.status(404).json({
+                success: false,
+                msg: "Cliente no encontrado"
+            });
+        }
+       console.log("Correo del cliente:", cliente.correo);
+       await sendApprovalEmail(cliente.correo, cliente.name);
+
+        res.status(200).json({
+            success: true,
+            message: "Cliente aprobado",
+            cliente
+        });
+
+    } catch (error) {
+        return res.status(403).json({
+            success: false,
+            msg: error.message || "No tienes permisos"
+        });
+    }
+};
 
 
 export const getClientesByAdmin = async (req, res) => {
@@ -118,43 +179,84 @@ export const getClientesByAdmin = async (req, res) => {
         return res.status(403).json({ message: "Solo los administradores pueden ver la lista de clientes" });
     }
 
-    const clientes = await authAdminModel.find({ role: "CLIENTE" });
+    const clientes = await authUserModel.find({ role: "CLIENTE" });
     res.status(200).json(clientes);
 };
 
 
 export const updateCliente = async (req, res) => {
-    const id = req.params.id;
+    try {
+        const id = req.params.id;
+        const data = req.body;
 
-    
-    const errorPermisos = validarPermisoPropietarioOAdmin(req, res, id);
-    if (errorPermisos) return;
-    
-    await validarExistenciaUsuario(id, res);
-    
-    const errorCampos = validarCamposEditables(req.body, res);
-    if (errorCampos) return;
+        
+        await validarPermisoPropietarioOAdmin(req, id);
+        await validarCamposEditables(req.body, id);
+     
+        await  ingresosCuenta(data.ingresos)
 
-    const { NoCuenta, dpi, role, ...datosActualizables } = req.body;
-    const cliente = await authAdminModel.findByIdAndUpdate(id, datosActualizables, { new: true });
+        
+        const { dpi, correo, username, NoCuenta, role, password, ...datosActualizables } = req.body;
 
-    res.status(200).json({ message: "Cliente actualizado", cliente });
+        const cliente = await authUserModel.findByIdAndUpdate(
+            id,
+            datosActualizables,
+            { new: true }
+        );
+
+        if (!cliente) {
+            return res.status(404).json({
+                success: false,
+                msg: "Cliente no encontrado"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Cliente actualizado",
+            cliente
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            msg: error.message
+        });
+    }
 };
+
 
 
 export const deleteCliente = async (req, res) => {
-    const id = req.params.id;
+    try {
+        const id = req.params.id;
+    await validarPermisoPropietarioOAdmin(req, id);
 
-    
-    const errorPermisos = validarPermisoPropietarioOAdmin(req, res, id);
-    if (errorPermisos) return;
+    const cliente = await authUserModel.findByIdAndUpdate(
+        id,
+        { status: false },
+        { new: true }
+    );
 
-    
-    await validarExistenciaUsuario(id, res);
+    if (!cliente) {
+        return res.status(404).json({
+            success: false,
+            msg: "Cliente no encontrado",
+        });
+    }
 
-   
-    const cliente = await authAdminModel.findByIdAndDelete(id);
-    res.status(200).json({ message: "Cliente eliminado", cliente });
+    res.status(200).json({
+        success: true,
+        msg: "Cuenta desactivada correctamente",
+        cliente,
+    });
+} catch (error) {
+    res.status(error.status || 500).json({
+        success: false,
+        msg: error.message || "Error al desactivar cuenta",
+    });
+}
 };
+
 
 
