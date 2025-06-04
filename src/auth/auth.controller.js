@@ -164,6 +164,7 @@ export const aprobarCliente = async (req, res) => {
         });
 
     } catch (error) {
+        console.log(error)
         return res.status(403).json({
             success: false,
             msg: error.message || "No tienes permisos"

@@ -12,7 +12,7 @@ const favoritoSchema = new mongoose.Schema({
   },
   tipoCuenta: {
     type: String,
-    enum: ['ahorro', 'corriente', 'nomina', 'empresarial'],
+    enum: ['ahorro', 'monetaria', 'empresarial'],
     required: true
   },
   alias: {

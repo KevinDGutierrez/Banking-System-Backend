@@ -1,4 +1,4 @@
-import favoritosModel from "./favoritos.model";
+import favoritosModel from "./favoritos.model.js";
 
 export const agregarFavorito = async (req, res) => {
   try {

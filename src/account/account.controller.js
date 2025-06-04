@@ -4,7 +4,7 @@ import { validarPropietarioCuenta, validarTipoCuenta } from "../helpers/db-valid
 export const crearCuenta = async (req, res) => {
   try {
     const user = req.user;
-    const { tipo, moneda, entidadBancaria, tasaInteres } = req.body;
+    const { tipo, moneda, entidadBancaria } = req.body;
 
     await validarTipoCuenta(tipo);
     await validarPropietarioCuenta(user._id, req.body.cuentaDestino);
@@ -18,7 +18,6 @@ export const crearCuenta = async (req, res) => {
       tipo,
       moneda,
       entidadBancaria,
-      tasaInteres
     });
 
     res.status(201).json({
