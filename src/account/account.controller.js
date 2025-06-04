@@ -1,5 +1,5 @@
 import accountModel from "./account.model.js";
-import { validarPropietarioCuenta, validarTipoCuenta } from "../helpers/db-validator-cuenta.js";
+import {  validarTipoCuenta } from "../helpers/db-validator-cuenta.js";
 
 export const crearCuenta = async (req, res) => {
   try {
@@ -7,7 +7,7 @@ export const crearCuenta = async (req, res) => {
     const { tipo, moneda, entidadBancaria } = req.body;
 
     await validarTipoCuenta(tipo);
-    await validarPropietarioCuenta(user._id, req.body.cuentaDestino);
+    
 
     const generarNumeroCuenta = () =>
       Math.floor(100000000 + Math.random() * 900000000).toString();
@@ -26,6 +26,7 @@ export const crearCuenta = async (req, res) => {
     });
 
   } catch (error) {
+    console.log(error)
     res.status(400).json({ msg: error.message });
   }
 };
