@@ -1,0 +1,64 @@
+[{
+  "_id": {
+    "$oid": "6841cbed65a7802b866bce8b"
+  },
+  "name": "Banco Industrial",
+  "description": "Liderezgo y Sostenibilidad",
+  "pais": "Guatemala",
+  "moneda": "GTQ",
+  "status": "active",
+  "createdAt": {
+    "$date": "2025-06-05T16:55:09.702Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-05T16:55:09.702Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6841cbed65a7802b866bce90"
+  },
+  "name": "Bac Credomatic",
+  "description": "Banco de los consumidores",
+  "pais": "Guatemala",
+  "moneda": "GTQ",
+  "status": "active",
+  "createdAt": {
+    "$date": "2025-06-05T16:55:09.713Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-05T16:55:09.713Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6841cbed65a7802b866bce94"
+  },
+  "name": "Banrural",
+  "description": "Banco de los campesinos",
+  "pais": "Guatemala",
+  "moneda": "GTQ",
+  "status": "active",
+  "createdAt": {
+    "$date": "2025-06-05T16:55:09.720Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-05T16:55:09.720Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "68422fe64442e9268c4ee007"
+  },
+  "name": "Banco Promerica",
+  "description": "Banco de los emprendedores",
+  "pais": "Guatemala",
+  "moneda": "GTQ",
+  "status": "active",
+  "createdAt": {
+    "$date": "2025-06-06T00:01:42.463Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-06T00:01:42.463Z"
+  }
+}]

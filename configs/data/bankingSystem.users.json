@@ -1,0 +1,131 @@
+[{
+  "_id": {
+    "$oid": "683fb6277f1a11a40d3bb040"
+  },
+  "username": "adminb",
+  "correo": "admin@.com",
+  "password": "$argon2id$v=19$m=65536,t=3,p=4$u0rnelMaAn6oUqOsWmnxsA$NXh4eeCpzbTx0caa08Sbt/erHnbXGUj8wt1+daLBgss",
+  "role": "ADMIN",
+  "status": true,
+  "createdAt": {
+    "$date": "2025-06-04T02:57:43.269Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-04T02:57:43.269Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6841bd1c75f14021567bdacb"
+  },
+  "name": "Daniel Castillo",
+  "username": "dcastillo",
+  "NoCuenta": "232709498",
+  "dpi": "921243543",
+  "direccion": "Av Capital 2",
+  "celular": "55135511",
+  "correo": "pablocastillo4821@gmail.com",
+  "password": "$argon2id$v=19$m=65536,t=3,p=4$wxk+xrm4ICpKtptggl6/AQ$/a5s1pXHOKSyHyIKTOBOsFHLQC6tfF2duak6sD/wElE",
+  "NameTrabajo": "BAC",
+  "role": "CLIENTE",
+  "ingresos": 160,
+  "status": true,
+  "createdAt": {
+    "$date": "2025-06-05T15:51:56.274Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-05T15:55:38.470Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6841d1c7c46455c2fd13136f"
+  },
+  "name": "Daniel Ramirez",
+  "username": "dramirez",
+  "NoCuenta": "296933680",
+  "dpi": "921243544",
+  "direccion": "Av Capital 3",
+  "celular": "55135512",
+  "correo": "daniel@gmail.com",
+  "password": "$argon2id$v=19$m=65536,t=3,p=4$md/ZHBAlOfT/T4f+UkkMAg$q1/3UqTh8fCHFpAkFvZMJAMgZCHp8NDZMB/qSc/L6WQ",
+  "NameTrabajo": "BAC",
+  "role": "CLIENTE",
+  "ingresos": 160,
+  "status": true,
+  "createdAt": {
+    "$date": "2025-06-05T17:20:07.860Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-05T17:20:36.608Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6841d3d507b324fec07bd7b5"
+  },
+  "name": "Kevin Gutierrez",
+  "username": "kgutierrez",
+  "NoCuenta": "323712523",
+  "dpi": "921243541",
+  "direccion": "Av Capital 3",
+  "celular": "55135501",
+  "correo": "kevin@gmail.com",
+  "password": "$argon2id$v=19$m=65536,t=3,p=4$YE970T/RTKZIdLok2Np/JA$ahL3ySxJLmgpRAlxR7XyHUfDZ5WOd4NvkHwWSjvLJ4c",
+  "NameTrabajo": "Industrial",
+  "role": "CLIENTE",
+  "ingresos": 160,
+  "status": true,
+  "createdAt": {
+    "$date": "2025-06-05T17:28:53.566Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-05T17:29:52.845Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6841d43107b324fec07bd7c0"
+  },
+  "name": "Ian Alfaro",
+  "username": "ialfaro",
+  "NoCuenta": "341275108",
+  "dpi": "921243542",
+  "direccion": "Av Capital 3",
+  "celular": "55135502",
+  "correo": "ialfaro@gmail.com",
+  "password": "$argon2id$v=19$m=65536,t=3,p=4$0IFwVZ7oVX91TXXcK4FeEA$nZdtkbstP4IB25WnPMBS0qzf3/a2BoAS3cl8dpZAVeY",
+  "NameTrabajo": "Banrural",
+  "role": "CLIENTE",
+  "ingresos": 160,
+  "status": true,
+  "createdAt": {
+    "$date": "2025-06-05T17:30:25.836Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-05T17:31:29.571Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "6842538a94cb63c53d9ccd06"
+  },
+  "name": "Elmer Santos",
+  "username": "esantos",
+  "NoCuenta": "212088661",
+  "dpi": "921243513",
+  "direccion": "Av Capital 7",
+  "celular": "55135503",
+  "correo": "esantos@gmail.com",
+  "password": "$argon2id$v=19$m=65536,t=3,p=4$8cX42ZgB6PbGMlzUCrwf5Q$n+kp2DJzbo4+7PJx+XoW9WrB6STKwCiEsvT2NIqz3ZU",
+  "NameTrabajo": "Kinal Informatica",
+  "role": "CLIENTE",
+  "ingresos": 3000,
+  "status": false,
+  "createdAt": {
+    "$date": "2025-06-06T02:33:46.570Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-06T02:33:46.570Z"
+  }
+}]
