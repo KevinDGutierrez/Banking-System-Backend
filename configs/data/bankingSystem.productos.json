@@ -1,45 +1,48 @@
 [{
   "_id": {
-    "$oid": "684346e8e8901da9d6143b0b"
+    "$oid": "684351d8ec8f7c1b7688d674"
   },
-  "nombre": "Samsung A32",
-  "descripcion": "Teléfono de gama media",
-  "puntos": 5000,
-  "status": true,
-  "createdAt": {
-    "$date": "2025-06-06T19:52:08.916Z"
-  },
-  "updatedAt": {
-    "$date": "2025-06-06T20:08:44.875Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "684346fae8901da9d6143b0e"
-  },
-  "nombre": "iPhone 14",
-  "descripcion": "Teléfono de gama alta",
-  "puntos": 10000,
-  "status": true,
-  "createdAt": {
-    "$date": "2025-06-06T19:52:26.896Z"
-  },
-  "updatedAt": {
-    "$date": "2025-06-06T19:52:26.896Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "684347f65f96cb94667b4ea2"
-  },
-  "nombre": "iPhone 12",
+  "nombre": "iPhone 13",
   "descripcion": "Teléfono de gama baja",
+  "existencias": 1,
   "puntos": 1000,
   "status": true,
   "createdAt": {
-    "$date": "2025-06-06T19:56:39.001Z"
+    "$date": "2025-06-06T20:38:48.154Z"
   },
   "updatedAt": {
-    "$date": "2025-06-06T19:56:39.001Z"
+    "$date": "2025-06-06T20:38:48.154Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "684351ffec8f7c1b7688d677"
+  },
+  "nombre": "iPhone 14",
+  "descripcion": "Teléfono de gama media",
+  "existencias": 10,
+  "puntos": 1500,
+  "status": true,
+  "createdAt": {
+    "$date": "2025-06-06T20:39:27.528Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-06T20:39:27.528Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "68435211ec8f7c1b7688d67a"
+  },
+  "nombre": "iPhone 15",
+  "descripcion": "Teléfono de gama alta",
+  "existencias": 5,
+  "puntos": 5000,
+  "status": true,
+  "createdAt": {
+    "$date": "2025-06-06T20:39:45.790Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-06T20:41:18.604Z"
   }
 }]
