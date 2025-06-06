@@ -1,0 +1,45 @@
+[{
+  "_id": {
+    "$oid": "684346e8e8901da9d6143b0b"
+  },
+  "nombre": "Samsung A32",
+  "descripcion": "Teléfono de gama media",
+  "puntos": 5000,
+  "status": true,
+  "createdAt": {
+    "$date": "2025-06-06T19:52:08.916Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-06T20:08:44.875Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "684346fae8901da9d6143b0e"
+  },
+  "nombre": "iPhone 14",
+  "descripcion": "Teléfono de gama alta",
+  "puntos": 10000,
+  "status": true,
+  "createdAt": {
+    "$date": "2025-06-06T19:52:26.896Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-06T19:52:26.896Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "684347f65f96cb94667b4ea2"
+  },
+  "nombre": "iPhone 12",
+  "descripcion": "Teléfono de gama baja",
+  "puntos": 1000,
+  "status": true,
+  "createdAt": {
+    "$date": "2025-06-06T19:56:39.001Z"
+  },
+  "updatedAt": {
+    "$date": "2025-06-06T19:56:39.001Z"
+  }
+}]
