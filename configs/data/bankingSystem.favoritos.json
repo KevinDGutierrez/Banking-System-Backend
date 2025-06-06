@@ -1,0 +1,42 @@
+[{
+  "_id": {
+    "$oid": "68424e1cc6aed9f736bf5cb3"
+  },
+  "usuario": {
+    "$oid": "6841bd1c75f14021567bdacb"
+  },
+  "cuentaDestino": {
+    "$oid": "6841d3d507b324fec07bd7b7"
+  },
+  "tipoCuenta": "empresarial",
+  "alias": "Cuenta de kevin para guardar dinero",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68424f8894cb63c53d9ccce7"
+  },
+  "usuario": {
+    "$oid": "6841bd1c75f14021567bdacb"
+  },
+  "cuentaDestino": {
+    "$oid": "68422d44d38bd9dcff8697fa"
+  },
+  "tipoCuenta": "monetaria",
+  "alias": "Cuenta de ian para guardar dinero",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68424ff294cb63c53d9cccf2"
+  },
+  "usuario": {
+    "$oid": "6841d43107b324fec07bd7c0"
+  },
+  "cuentaDestino": {
+    "$oid": "6841d1c7c46455c2fd131371"
+  },
+  "tipoCuenta": "ahorro",
+  "alias": "Cuenta de daniel para ahorrar dinero",
+  "__v": 0
+}]

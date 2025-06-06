@@ -10,6 +10,11 @@ import { createAdmin } from '../src/auth/auth.controller.js';
 import authRoutes from '../src/auth/auth.routes.js'
 import accountRoutes from '../src/account/account.routes.js';
 import favoritosRoutes from '../src/favoritos/favoritos.routes.js';
+import bankingRoutes from '../src/banking/banking.routes.js';
+import { BancoIndustrial } from '../src/banking/banking.controller.js';
+import { BacCredomatic } from '../src/banking/banking.controller.js';
+import { Banrural } from '../src/banking/banking.controller.js';
+import { BancoPromerica } from '../src/banking/banking.controller.js';
 const middlewares = (app) => {
     app.use(express.urlencoded({ extended: false }));
     app.use(cors());
@@ -23,6 +28,7 @@ const routes = (app) => {
     app.use('/users', authRoutes);
     app.use('/cuentas', accountRoutes);
     app.use('/favoritos', favoritosRoutes);
+    app.use('/bancos', bankingRoutes);
 }
 
 const conectarDB = async () => {
@@ -30,6 +36,10 @@ const conectarDB = async () => {
         await dbConnection();
         console.log('¡¡Conexión a la base de datos exitosa!!');
         await createAdmin();
+        await BancoIndustrial();
+        await BacCredomatic();
+        await Banrural();
+        await BancoPromerica(); 
     } catch (error) {
         console.error('Error al conectar a la base de datos:', error);
         process.exit(1);

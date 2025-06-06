@@ -1,37 +1,41 @@
 import authUserModel from "./authUser.model.js";
 import { request, response } from "express";
 import { hash, verify } from "argon2";
-import { ingresosCuenta,validarCamposObligatorios, validarCamposEditables
-    , validarPermisoPropietarioOAdmin,  validarAprobacionPorAdmin,
+import {
+    ingresosCuenta, validarCamposObligatorios, validarCamposEditables
+    , validarPermisoPropietarioOAdmin, validarAprobacionPorAdmin,
     validarCamposUnicos, validarActivacionCuentaStatus
- } from "../helpers/db-validator-auth.js";
+} from "../helpers/db-validator-auth.js";
 import { generateJWT } from "../helpers/generate-jwt.js";
 import { sendApprovalEmail } from "../utils/sendEmail.js";
+import accountModel from "../account/account.model.js";
+import { validarTipoCuenta } from "../helpers/db-validator-cuenta.js";
+import bankingModel from "../banking/banking.model.js";
 
 
 
 export const createAdmin = async () => {
     try {
-        const verifyUser = await authUserModel.findOne({username : "ADMINB".toLowerCase(), correo : "admin@.com".toLowerCase()});
-        
+        const verifyUser = await authUserModel.findOne({ username: "ADMINB".toLowerCase(), correo: "admin@.com".toLowerCase() });
+
         if (!verifyUser) {
             const encryptedPassword = await hash("ADMINB")
             const adminUser = new authUserModel({
-                username : "ADMINB".toLowerCase(),
-                correo : "admin@.com".toLowerCase(),
-                password : encryptedPassword,
-                role : "ADMIN",
-                status : true, 
+                username: "ADMINB".toLowerCase(),
+                correo: "admin@.com".toLowerCase(),
+                password: encryptedPassword,
+                role: "ADMIN",
+                status: true,
             })
 
-            await adminUser.save()   
+            await adminUser.save()
 
-            console.log("ADMIN CREADO") 
+            console.log("ADMIN CREADO")
         } else {
             console.log("ADMIN EXISTE, NO SE VOLVIO A CREAR")
         }
     } catch (error) {
-        console.error ("Error al crear ADMIN", error)
+        console.error("Error al crear ADMIN", error)
     }
 }
 
@@ -49,7 +53,7 @@ export const login = async (req, res) => {
                 { correo: lowerCorreo },
                 { username: lowerUsername }
             ],
-            
+
         });
 
         if (!user) {
@@ -62,8 +66,8 @@ export const login = async (req, res) => {
 
         await validarActivacionCuentaStatus(user);
 
-          const validPassword = await verify(user.password, password);
-            if (!validPassword) {
+        const validPassword = await verify(user.password, password);
+        if (!validPassword) {
             return res.status(400).json({
                 success: false,
                 msg: "Contraseña incorrecta"
@@ -95,11 +99,9 @@ export const login = async (req, res) => {
 export const registerCliente = async (req, res) => {
     try {
         const data = req.body;
-        
 
-         
         await validarCamposObligatorios(data);
-        await  ingresosCuenta(data.ingresos)
+        await ingresosCuenta(data.ingresos)
         await validarCamposUnicos(data);
 
         const encryptedPassword = await hash(data.password);
@@ -108,10 +110,13 @@ export const registerCliente = async (req, res) => {
             return Math.floor(100000000 + Math.random() * 900000000).toString();
         };
 
-         await authUserModel.create({
+        const noCuentaGenerado = generateAccountNumber();
+        const banco = await bankingModel.findOne({ name: "Banco Promerica" });
+
+        const nuevoCliente = await authUserModel.create({
             name: data.name,
             username: data.username,
-            NoCuenta: generateAccountNumber(),
+            NoCuenta: noCuentaGenerado,
             password: encryptedPassword,
             dpi: data.dpi,
             direccion: data.direccion,
@@ -122,9 +127,19 @@ export const registerCliente = async (req, res) => {
             status: false
         });
 
+
+        await accountModel.create({
+            numeroCuenta: noCuentaGenerado,
+            propietario: nuevoCliente._id,
+            moneda: 'GTQ',
+            entidadBancaria: banco._id,
+            estado: 'activa',
+            saldo: 0
+        })
+
         res.status(200).json({
             msg: "Cliente Registrado, espere a que un administrador apruebe su cuenta",
-            
+
         });
     } catch (error) {
         console.log(error);
@@ -135,12 +150,54 @@ export const registerCliente = async (req, res) => {
     }
 };
 
+export const establecerTipoCuenta = async (req, res) => {
+    try {
+        const { tipo, entidadBancaria } = req.body;
+        const { numeroCuenta } = req.params;
+        const userId = req.user.id;
+
+
+        await validarTipoCuenta(tipo);
+
+        const cuenta = await accountModel.findOne({ numeroCuenta });
+
+
+        if (!cuenta) {
+            return res.status(404).json({
+                success: false,
+                msg: "Cuenta no encontrada"
+            });
+        }
+
+        if (cuenta.propietario.toString() !== userId) {
+            return res.status(403).json({
+                success: false,
+                msg: "No tienes permisos para realizar esta acción"
+            });
+        }
+
+        cuenta.tipo = tipo;
+        await cuenta.save();
+        res.status(200).json({
+            success: true,
+            msg: "Tipo de cuenta actualizado correctamente",
+            cuenta
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            msg: "Error al actualizar tipo de cuenta",
+            error: error.message
+        });
+    }
+}
 
 export const aprobarCliente = async (req, res) => {
     try {
         const id = req.params.id;
 
-        await validarAprobacionPorAdmin(req); 
+        await validarAprobacionPorAdmin(req);
 
         const cliente = await authUserModel.findByIdAndUpdate(
             id,
@@ -154,8 +211,8 @@ export const aprobarCliente = async (req, res) => {
                 msg: "Cliente no encontrado"
             });
         }
-       console.log("Correo del cliente:", cliente.correo);
-       await sendApprovalEmail(cliente.correo, cliente.name);
+        console.log("Correo del cliente:", cliente.correo);
+        await sendApprovalEmail(cliente.correo, cliente.name);
 
         res.status(200).json({
             success: true,
@@ -190,13 +247,13 @@ export const updateCliente = async (req, res) => {
         const id = req.params.id;
         const data = req.body;
 
-        
+
         await validarPermisoPropietarioOAdmin(req, id);
         await validarCamposEditables(req.body, id);
-     
-        await  ingresosCuenta(data.ingresos)
 
-        
+        await ingresosCuenta(data.ingresos)
+
+
         const { dpi, correo, username, NoCuenta, role, password, ...datosActualizables } = req.body;
 
         const cliente = await authUserModel.findByIdAndUpdate(
@@ -231,32 +288,32 @@ export const updateCliente = async (req, res) => {
 export const deleteCliente = async (req, res) => {
     try {
         const id = req.params.id;
-    await validarPermisoPropietarioOAdmin(req, id);
+        await validarPermisoPropietarioOAdmin(req, id);
 
-    const cliente = await authUserModel.findByIdAndUpdate(
-        id,
-        { status: false },
-        { new: true }
-    );
+        const cliente = await authUserModel.findByIdAndUpdate(
+            id,
+            { status: false },
+            { new: true }
+        );
 
-    if (!cliente) {
-        return res.status(404).json({
+        if (!cliente) {
+            return res.status(404).json({
+                success: false,
+                msg: "Cliente no encontrado",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            msg: "Cuenta desactivada correctamente",
+            cliente,
+        });
+    } catch (error) {
+        res.status(error.status || 500).json({
             success: false,
-            msg: "Cliente no encontrado",
+            msg: error.message || "Error al desactivar cuenta",
         });
     }
-
-    res.status(200).json({
-        success: true,
-        msg: "Cuenta desactivada correctamente",
-        cliente,
-    });
-} catch (error) {
-    res.status(error.status || 500).json({
-        success: false,
-        msg: error.message || "Error al desactivar cuenta",
-    });
-}
 };
 
 

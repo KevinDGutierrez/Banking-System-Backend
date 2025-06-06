@@ -1,0 +1,139 @@
+[{
+  "_id": {
+    "$oid": "6841cf0c8366c8c08a23294c"
+  },
+  "numeroCuenta": "716901046",
+  "propietario": {
+    "$oid": "6841bd1c75f14021567bdacb"
+  },
+  "tipo": "monetaria",
+  "saldo": 0,
+  "moneda": "EUR",
+  "entidadBancaria": {
+    "$oid": "6841cbed65a7802b866bce8b"
+  },
+  "estado": "activa",
+  "fechaApertura": {
+    "$date": "2025-06-05T17:08:28.686Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6841d1c7c46455c2fd131371"
+  },
+  "numeroCuenta": "296933680",
+  "propietario": {
+    "$oid": "6841d1c7c46455c2fd13136f"
+  },
+  "saldo": 0,
+  "moneda": "GTQ",
+  "estado": "activa",
+  "fechaApertura": {
+    "$date": "2025-06-05T17:20:07.865Z"
+  },
+  "__v": 0,
+  "entidadBancaria": {
+    "$oid": "6841cbed65a7802b866bce90"
+  },
+  "tipo": "ahorro"
+},
+{
+  "_id": {
+    "$oid": "6841d3d507b324fec07bd7b7"
+  },
+  "numeroCuenta": "323712523",
+  "propietario": {
+    "$oid": "6841d3d507b324fec07bd7b5"
+  },
+  "saldo": 0,
+  "moneda": "GTQ",
+  "estado": "activa",
+  "fechaApertura": {
+    "$date": "2025-06-05T17:28:53.587Z"
+  },
+  "__v": 0,
+  "entidadBancaria": {
+    "$oid": "6841cbed65a7802b866bce94"
+  },
+  "tipo": "empresarial"
+},
+{
+  "_id": {
+    "$oid": "6841d43107b324fec07bd7c2"
+  },
+  "numeroCuenta": "341275108",
+  "propietario": {
+    "$oid": "6841d43107b324fec07bd7c0"
+  },
+  "saldo": 0,
+  "moneda": "GTQ",
+  "estado": "activa",
+  "fechaApertura": {
+    "$date": "2025-06-05T17:30:25.840Z"
+  },
+  "__v": 0,
+  "entidadBancaria": {
+    "$oid": "6841cbed65a7802b866bce94"
+  },
+  "tipo": "empresarial"
+},
+{
+  "_id": {
+    "$oid": "68422d44d38bd9dcff8697fa"
+  },
+  "numeroCuenta": "680501590",
+  "propietario": {
+    "$oid": "6841d43107b324fec07bd7c0"
+  },
+  "tipo": "monetaria",
+  "saldo": 0,
+  "moneda": "EUR",
+  "entidadBancaria": {
+    "$oid": "6841cbed65a7802b866bce8b"
+  },
+  "estado": "activa",
+  "fechaApertura": {
+    "$date": "2025-06-05T23:50:28.241Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6842538a94cb63c53d9ccd08"
+  },
+  "numeroCuenta": "212088661",
+  "propietario": {
+    "$oid": "6842538a94cb63c53d9ccd06"
+  },
+  "saldo": 0,
+  "moneda": "GTQ",
+  "entidadBancaria": {
+    "$oid": "68422fe64442e9268c4ee007"
+  },
+  "estado": "activa",
+  "fechaApertura": {
+    "$date": "2025-06-06T02:33:46.588Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68425a732cd8b480cf283af9"
+  },
+  "numeroCuenta": "502470701",
+  "propietario": {
+    "$oid": "6841d43107b324fec07bd7c0"
+  },
+  "tipo": "empresarial",
+  "saldo": 0,
+  "moneda": "USD",
+  "entidadBancaria": {
+    "$oid": "6841cbed65a7802b866bce94"
+  },
+  "estado": "activa",
+  "fechaApertura": {
+    "$date": "2025-06-06T03:03:15.472Z"
+  },
+  "__v": 0
+}]
