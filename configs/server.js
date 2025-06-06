@@ -10,6 +10,8 @@ import { createAdmin } from '../src/auth/auth.controller.js';
 import authRoutes from '../src/auth/auth.routes.js'
 import accountRoutes from '../src/account/account.routes.js';
 import favoritosRoutes from '../src/favoritos/favoritos.routes.js';
+import creditosRoutes from '../src/credito/credito.routes.js';
+
 const middlewares = (app) => {
     app.use(express.urlencoded({ extended: false }));
     app.use(cors());
@@ -23,6 +25,7 @@ const routes = (app) => {
     app.use('/users', authRoutes);
     app.use('/cuentas', accountRoutes);
     app.use('/favoritos', favoritosRoutes);
+    app.use('/creditos', creditosRoutes);
 }
 
 const conectarDB = async () => {
