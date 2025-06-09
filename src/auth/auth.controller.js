@@ -215,7 +215,7 @@ export const resetPassword = async (req, res) => {
 
 export const establecerTipoCuenta = async (req, res) => {
     try {
-        const { tipo, entidadBancaria } = req.body;
+        const { tipo } = req.body;
         const { numeroCuenta } = req.params;
         const userId = req.user.id;
 
@@ -240,7 +240,7 @@ export const establecerTipoCuenta = async (req, res) => {
         }
 
         cuenta.tipo = tipo;
-        await cuenta.save();
+        await cuenta.save(tipo);
         res.status(200).json({
             success: true,
             msg: "Tipo de cuenta actualizado correctamente",
