@@ -20,7 +20,7 @@ export const sendResetEmail = async (to, name, text) => {
                 <h3>Hola ${name},</h3>
                 <p>Has solicitado restablecer tu contraseña.</p>
                 <p>Copia  el siguiente codigo para crear una nueva contraseña:</p>
-                <a href="${text}" target="_blank">${text}</a>
+                <p href="${text}" target="_blank">${text}</p>
                 <p>Este codigo expirará en 15 minutos.</p>
             `
         };
