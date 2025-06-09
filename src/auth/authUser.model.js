@@ -13,6 +13,7 @@ const UserSchema = Schema({
     NameTrabajo: { type: String },
     role: { type: String, enum: ["ADMIN", "CLIENTE"], default: "CLIENTE" },
     ingresos: { type: Number },
+    codigoGenerado : {type : Number } ,
     status: { type: Boolean, default: false }
 }, {
     timestamps: true,

@@ -159,11 +159,11 @@ export const solicitarRecuperacion = async (req, res) => {
                 msg: "Usuario no encontrado"
             });
         }
+        const generateSixDigitCode = () => Math.floor(100000 + Math.random() * 900000);
+        const codigo  = generateSixDigitCode();
+        
 
-        const resetToken = await generateResetToken(user._id);
-        const resetLink = `${resetToken}`;
-
-        await sendResetEmail(user.correo, user.name, resetLink);
+        await sendResetEmail(user.correo, user.name, codigo);
 
         res.status(200).json({
             success: true,
@@ -181,16 +181,15 @@ export const solicitarRecuperacion = async (req, res) => {
 
 export const resetPassword = async (req, res) => {
     try {
-        const { token } = req.params;
+        const { codigoGenerado } = req.params;
         const { password } = req.body;
 
-       const { uid } = jwt.verify(token, process.env.SECRETORPRIVATEKEY);
-       const user = await authUserModel.findById(uid);
+      const user = await authUserModel.findOne({  codigoGenerado })
 
         const validPassword = await hash(password);
 
         user.password = validPassword;
-        user.resetToken = null;
+        user.codigoGenerado = null;
         await user.save();
 
         res.status(200).json({

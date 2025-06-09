@@ -7,13 +7,13 @@ export const sendResetEmail = async (to, name, link) => {
             port: 465,
             secure: true,
             auth: {
-                user: "pablocastillo4821@gmail.com",
-                pass: "jytu uiqm fvlc qkdu"
+                user: "bancoinnova86@gmail.com",
+                pass: "jtrv junp cffz npvi"
             }
         });
 
         const mailOptions = {
-            from: '"Banking System" <pablocastillo4821@gmail.com>',
+            from: '"Banking System" <bancoinnova86@gmail.com>',
             to,
             subject: "Banking System - Recuperación de cuenta",
              html: `
@@ -21,7 +21,7 @@ export const sendResetEmail = async (to, name, link) => {
                 <p>Has solicitado restablecer tu contraseña.</p>
                 <p>Copia  el siguiente codigo para crear una nueva contraseña:</p>
                 <a href="${link}" target="_blank">${link}</a>
-                <p>Este enlace expirará en 15 minutos.</p>
+                <p>Este codigo expirará en 15 minutos.</p>
             `
         };
 
