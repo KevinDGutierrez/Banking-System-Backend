@@ -13,10 +13,12 @@ import favoritosRoutes from '../src/favoritos/favoritos.routes.js';
 import creditosRoutes from '../src/credito/credito.routes.js';
 import bankingRoutes from '../src/banking/banking.routes.js';
 import productoRoutes from '../src/productos/producto.routes.js';
+import depositoRoutes from '../src/deposit/deposit.routes.js';
 import { BancoIndustrial } from '../src/banking/banking.controller.js';
 import { BacCredomatic } from '../src/banking/banking.controller.js';
 import { Banrural } from '../src/banking/banking.controller.js';
 import { BancoPromerica } from '../src/banking/banking.controller.js';
+
 const middlewares = (app) => {
     app.use(express.urlencoded({ extended: false }));
     app.use(cors());
@@ -33,6 +35,7 @@ const routes = (app) => {
     app.use('/creditos', creditosRoutes);
     app.use('/bancos', bankingRoutes);
     app.use('/productos', productoRoutes);
+    app.use('/depositos', depositoRoutes);
 }
 
 const conectarDB = async () => {
