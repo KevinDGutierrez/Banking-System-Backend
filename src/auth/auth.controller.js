@@ -109,7 +109,7 @@ export const registerCliente = async (req, res) => {
         };
 
         const noCuentaGenerado = generateAccountNumber();
-        const banco = await bankingModel.findOne({ name: "Banco Promerica" });
+        const banco = await bankingModel.findOne({ name: "banco innova" });
 
         const nuevoCliente = await authUserModel.create({
             name: data.name,

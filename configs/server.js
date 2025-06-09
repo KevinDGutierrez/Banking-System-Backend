@@ -16,7 +16,7 @@ import productoRoutes from '../src/productos/producto.routes.js';
 import { BancoIndustrial } from '../src/banking/banking.controller.js';
 import { BacCredomatic } from '../src/banking/banking.controller.js';
 import { Banrural } from '../src/banking/banking.controller.js';
-import { BancoPromerica } from '../src/banking/banking.controller.js';
+import { BancoInnova } from '../src/banking/banking.controller.js';
 const middlewares = (app) => {
     app.use(express.urlencoded({ extended: false }));
     app.use(cors());
@@ -43,7 +43,7 @@ const conectarDB = async () => {
         await BancoIndustrial();
         await BacCredomatic();
         await Banrural();
-        await BancoPromerica(); 
+        await BancoInnova(); 
     } catch (error) {
         console.error('Error al conectar a la base de datos:', error);
         process.exit(1);
