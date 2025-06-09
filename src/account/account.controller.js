@@ -1,7 +1,6 @@
 import accountModel from "./account.model.js";
 import bankingModel from "../banking/banking.model.js";
-
-import {  validarTipoCuenta,  validarAprobacionPorAdmin } from "../helpers/db-validator-cuenta.js";
+import { validarTipoCuenta, validarAprobacionPorAdmin } from "../helpers/db-validator-cuenta.js";
 
 export const crearCuenta = async (req, res) => {
   try {
@@ -10,11 +9,10 @@ export const crearCuenta = async (req, res) => {
 
     await validarTipoCuenta(tipo);
 
-    const banco = await bankingModel.findOne({name: { $regex: new RegExp(entidadBancaria, "i") }});
+    const banco = await bankingModel.findOne({ name: { $regex: new RegExp(entidadBancaria, "i") } });
     if (!banco) {
       return res.status(404).json({ msg: "Entidad bancaria no encontrada" });
     }
-    
 
     const generarNumeroCuenta = () =>
       Math.floor(100000000 + Math.random() * 900000000).toString();
@@ -42,10 +40,9 @@ export const obtenerCuentasPorUsuario = async (req, res) => {
   try {
     const user = req.user;
 
-
     const cuentas = await accountModel.find({ propietario: user._id })
-    .populate('entidadBancaria', 'name')
-    .populate('propietario', 'name');
+      .populate('entidadBancaria', 'name')
+      .populate('propietario', 'name');
 
     if (cuentas.length === 0) {
       return res.status(404).json({ msg: "No hay cuentas para este usuario" });
@@ -57,7 +54,6 @@ export const obtenerCuentasPorUsuario = async (req, res) => {
     res.status(500).json({ msg: "Error al obtener las cuentas", error: error.message });
   }
 };
-
 
 export const obtenerTodasCuentas = async (req, res) => {
   try {
@@ -78,16 +74,14 @@ export const obtenerTodasCuentas = async (req, res) => {
   }
 }
 
-
 export const aprobarCuenta = async (req, res) => {
   try {
-    const {numeroCuenta} = req.params;
-
+    const { numeroCuenta } = req.params;
 
     await validarAprobacionPorAdmin(req);
 
     const cuenta = await accountModel.findOneAndUpdate(
-      {numeroCuenta},
+      { numeroCuenta },
       { estado: 'activa' },
       { new: true }
     )

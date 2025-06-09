@@ -6,7 +6,6 @@ export const agregarFavorito = async (req, res) => {
   try {
     const user = req.user;
     const { cuentaDestino, alias, tipoCuenta } = req.body;
-
     const cuenta = await accountModel.findOne({ numeroCuenta: cuentaDestino });
 
     const nuevoFavorito = await favoritosModel.create({
@@ -34,11 +33,10 @@ export const obtenerFavoritosPorUsuario = async (req, res) => {
         populate: [
           { path: 'propietario', select: 'name' },
           { path: 'entidadBancaria', select: 'name' },
-          {path : 'tipo', select: 'name'}
+          { path: 'tipo', select: 'name' }
         ]
       })
       .populate('usuario', 'username');
-
 
     if (favoritos.length === 0) {
       return res.status(404).json({ msg: "No hay favoritos para este usuario" });

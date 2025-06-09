@@ -6,11 +6,11 @@ const favoritoSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-cuentaDestino: {
-  type: mongoose.Schema.Types.ObjectId,
-  ref: 'Cuenta',
-  required: true
-},
+  cuentaDestino: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Cuenta',
+    required: true
+  },
   tipoCuenta: {
     type: String,
     ref: 'Cuenta',

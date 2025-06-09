@@ -15,8 +15,6 @@ import { sendResetEmail } from "../utils/sendRecuperacion.js";
 import { generateResetToken } from "../helpers/generateResetToken.js";
 import jwt from "jsonwebtoken";
 
-
-
 export const createAdmin = async () => {
     try {
         const verifyUser = await authUserModel.findOne({ username: "ADMINB".toLowerCase(), correo: "admin@.com".toLowerCase() });
@@ -42,14 +40,12 @@ export const createAdmin = async () => {
     }
 }
 
-
 export const login = async (req, res) => {
     const { correo, username, password } = req.body;
 
     try {
         const lowerCorreo = correo ? correo.toLowerCase() : null;
         const lowerUsername = username ? username.toLowerCase() : null;
-
 
         const user = await authUserModel.findOne({
             $or: [
@@ -98,7 +94,6 @@ export const login = async (req, res) => {
     }
 };
 
-
 export const registerCliente = async (req, res) => {
     try {
         const data = req.body;
@@ -129,7 +124,6 @@ export const registerCliente = async (req, res) => {
             ingresos: data.ingresos,
             status: false
         });
-
 
         await accountModel.create({
             numeroCuenta: noCuentaGenerado,
@@ -219,11 +213,9 @@ export const establecerTipoCuenta = async (req, res) => {
         const { numeroCuenta } = req.params;
         const userId = req.user.id;
 
-
         await validarTipoCuenta(tipo);
 
         const cuenta = await accountModel.findOne({ numeroCuenta });
-
 
         if (!cuenta) {
             return res.status(404).json({
@@ -292,7 +284,6 @@ export const aprobarCliente = async (req, res) => {
     }
 };
 
-
 export const getClientesByAdmin = async (req, res) => {
     const usuario = req.user;
 
@@ -304,18 +295,14 @@ export const getClientesByAdmin = async (req, res) => {
     res.status(200).json(clientes);
 };
 
-
 export const updateCliente = async (req, res) => {
     try {
         const id = req.params.id;
         const data = req.body;
 
-
         await validarPermisoPropietarioOAdmin(req, id);
         await validarCamposEditables(req.body, id);
-
         await ingresosCuenta(data.ingresos)
-
 
         const { dpi, correo, username, NoCuenta, role, password, ...datosActualizables } = req.body;
 
@@ -345,8 +332,6 @@ export const updateCliente = async (req, res) => {
         });
     }
 };
-
-
 
 export const deleteCliente = async (req, res) => {
     try {
@@ -378,6 +363,3 @@ export const deleteCliente = async (req, res) => {
         });
     }
 };
-
-
-

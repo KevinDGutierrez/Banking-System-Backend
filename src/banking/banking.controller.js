@@ -1,10 +1,9 @@
 import bankingModel from "./banking.model.js";
 
-
 export const BancoIndustrial = async (req, res) => {
 
     try {
-        const verifyBanco = await bankingModel.findOne({ name: "Banco Industrial" });  
+        const verifyBanco = await bankingModel.findOne({ name: "Banco Industrial" });
 
         if (!verifyBanco) {
             const bancoIndustrial = new bankingModel({
@@ -23,7 +22,6 @@ export const BancoIndustrial = async (req, res) => {
         console.error("Error al crear Banco Industrial", error)
     }
 }
-
 
 export const Banrural = async (req, res) => {
 
@@ -93,7 +91,6 @@ export const BancoPromerica = async (req, res) => {
         console.error("Error al crear Banco Promerica", error)
     }
 }
-
 
 export const getBancos = async (req, res) => {
     try {

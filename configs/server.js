@@ -10,7 +10,9 @@ import { createAdmin } from '../src/auth/auth.controller.js';
 import authRoutes from '../src/auth/auth.routes.js'
 import accountRoutes from '../src/account/account.routes.js';
 import favoritosRoutes from '../src/favoritos/favoritos.routes.js';
+import creditosRoutes from '../src/credito/credito.routes.js';
 import bankingRoutes from '../src/banking/banking.routes.js';
+import productoRoutes from '../src/productos/producto.routes.js';
 import { BancoIndustrial } from '../src/banking/banking.controller.js';
 import { BacCredomatic } from '../src/banking/banking.controller.js';
 import { Banrural } from '../src/banking/banking.controller.js';
@@ -28,7 +30,9 @@ const routes = (app) => {
     app.use('/users', authRoutes);
     app.use('/cuentas', accountRoutes);
     app.use('/favoritos', favoritosRoutes);
+    app.use('/creditos', creditosRoutes);
     app.use('/bancos', bankingRoutes);
+    app.use('/productos', productoRoutes);
 }
 
 const conectarDB = async () => {
