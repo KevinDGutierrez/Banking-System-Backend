@@ -11,6 +11,9 @@ import { sendApprovalEmail } from "../utils/sendEmail.js";
 import accountModel from "../account/account.model.js";
 import { validarTipoCuenta } from "../helpers/db-validator-cuenta.js";
 import bankingModel from "../banking/banking.model.js";
+import { sendResetEmail } from "../utils/sendRecuperacion.js";
+import { generateResetToken } from "../helpers/generateResetToken.js";
+import jwt from "jsonwebtoken";
 
 
 
@@ -149,6 +152,66 @@ export const registerCliente = async (req, res) => {
         });
     }
 };
+
+export const solicitarRecuperacion = async (req, res) => {
+    try {
+        const { correo } = req.body;
+
+        const user = await authUserModel.findOne({ correo: correo.toLowerCase() });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                msg: "Usuario no encontrado"
+            });
+        }
+
+        const resetToken = await generateResetToken(user._id);
+        const resetLink = `${resetToken}`;
+
+        await sendResetEmail(user.correo, user.name, resetLink);
+
+        res.status(200).json({
+            success: true,
+            msg: "Correo de recuperación enviado exitosamente"
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            msg: "Error al enviar el correo de recuperación",
+            error: error.message
+        });
+    }
+}
+
+export const resetPassword = async (req, res) => {
+    try {
+        const { token } = req.params;
+        const { password } = req.body;
+
+       const { uid } = jwt.verify(token, process.env.SECRETORPRIVATEKEY);
+       const user = await authUserModel.findById(uid);
+
+        const validPassword = await hash(password);
+
+        user.password = validPassword;
+        user.resetToken = null;
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            msg: "Contraseña actualizada correctamente"
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            msg: "Error al actualizar la contraseña",
+            error: error.message
+        });
+    }}
+
 
 export const establecerTipoCuenta = async (req, res) => {
     try {

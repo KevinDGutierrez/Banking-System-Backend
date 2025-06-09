@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { validarJWT } from "../middlewares/validar-jwt.js";
-import { registerCliente, login, getClientesByAdmin, updateCliente, deleteCliente, aprobarCliente, establecerTipoCuenta } from "./auth.controller.js";
+import { registerCliente, login, getClientesByAdmin, updateCliente, deleteCliente, aprobarCliente, establecerTipoCuenta, solicitarRecuperacion, resetPassword } from "./auth.controller.js";
 
 
 const router = Router()
@@ -13,6 +13,8 @@ router.put("/:id", validarJWT, updateCliente);
 router.delete("/:id", validarJWT, deleteCliente);
 router.get("/clientes", validarJWT, getClientesByAdmin);
 router.put("/cuentas/:numeroCuenta/tipo/", validarJWT, establecerTipoCuenta);
+router.post("/recuperacion", solicitarRecuperacion);
+router.post("/reset/:token", resetPassword);
 
 
 export default router;
