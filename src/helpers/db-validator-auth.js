@@ -81,12 +81,6 @@ export const validarPermisoPropietarioOAdmin = async (req, id) => {
     }
 };
 
-
-
-
-
-
-
 export const validarAprobacionPorAdmin  = async (req) => {
     const usuario = req.user;
 
@@ -106,3 +100,19 @@ export const validarActivacionCuentaStatus = async (user) => {
         throw new Error("Tu cuenta aún no está activada. Espera la aprobación del administrador.");
     }
 }
+
+export const codigoVencido = async (codigoGenerado) => {
+    const user = await authUserModel.findOne({ codigoGenerado });
+
+
+    const currentTime = new Date();
+    const expirationTime = new Date(user.codigoGeneradoCreatedAt); 
+
+    expirationTime.setMinutes(expirationTime.getMinutes() + 10);
+
+    if (currentTime > expirationTime) {
+        throw new Error("El código de recuperación ha expirado. Por favor, solicita uno nuevo.");
+    }
+
+    return user;
+};

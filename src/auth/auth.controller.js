@@ -4,7 +4,7 @@ import { hash, verify } from "argon2";
 import {
     ingresosCuenta, validarCamposObligatorios, validarCamposEditables
     , validarPermisoPropietarioOAdmin, validarAprobacionPorAdmin,
-    validarCamposUnicos, validarActivacionCuentaStatus
+    validarCamposUnicos, validarActivacionCuentaStatus, codigoVencido
 } from "../helpers/db-validator-auth.js";
 import { generateJWT } from "../helpers/generate-jwt.js";
 import { sendApprovalEmail } from "../utils/sendEmail.js";
@@ -112,14 +112,14 @@ export const registerCliente = async (req, res) => {
         const banco = await bankingModel.findOne({ name: "banco innova" });
 
         const nuevoCliente = await authUserModel.create({
-            name: data.name,
-            username: data.username,
+            name: data.name.toLowerCase(),
+            username: data.username.toLowerCase(),
             NoCuenta: noCuentaGenerado,
             password: encryptedPassword,
             dpi: data.dpi,
             direccion: data.direccion,
             celular: data.celular,
-            correo: data.correo,
+            correo: data.correo.toLowerCase(),
             NameTrabajo: data.NameTrabajo,
             ingresos: data.ingresos,
             status: false
@@ -161,6 +161,11 @@ export const solicitarRecuperacion = async (req, res) => {
         }
         const generateSixDigitCode = () => Math.floor(100000 + Math.random() * 900000);
         const codigo  = generateSixDigitCode();
+        const codigoGeneradoCreatedAt  = new Date();
+
+        user.codigoGenerado = codigo.toString();
+        user.codigoGeneradoCreatedAt = codigoGeneradoCreatedAt;
+        await user.save();
         
 
         await sendResetEmail(user.correo, user.name, codigo);
@@ -184,12 +189,13 @@ export const resetPassword = async (req, res) => {
         const { codigoGenerado } = req.params;
         const { password } = req.body;
 
-      const user = await authUserModel.findOne({  codigoGenerado })
+      const user = await codigoVencido(  codigoGenerado )
 
         const validPassword = await hash(password);
 
         user.password = validPassword;
         user.codigoGenerado = null;
+        user.codigoGeneradoCreatedAt = null;
         await user.save();
 
         res.status(200).json({
