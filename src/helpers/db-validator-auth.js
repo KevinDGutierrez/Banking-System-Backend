@@ -1,9 +1,10 @@
+import { hash, verify } from "argon2";
 import authUserModel from "../auth/authUser.model.js";
 
 export const ingresosCuenta = async (ingresos = '') => {
     if (!ingresos || Number(ingresos) < 100) {
-         throw new Error( "Los ingresos deben ser mayores o iguales a Q100" );
-  
+        throw new Error("Los ingresos deben ser mayores o iguales a Q100");
+
     }
 }
 
@@ -12,32 +13,17 @@ export const validarCamposObligatorios = async (data) => {
 
     for (const field of requiredFields) {
         if (!data[field]) {
-             throw new Error(`El campo ${field} es requerido`);
-          
+            throw new Error(`El campo ${field} es requerido`);
+
         }
     }
-    
+
 };
 
-export const validarCamposUnicos = async (data) => {
-    const { dpi, correo, username, celular } = data;
 
-    
-    const usuarioDpi = await authUserModel.findOne({ dpi });
-    if (usuarioDpi) throw new Error(`Este dpi ya está registrado en nuestro banco`);
-
-    const usuarioCorreo = await authUserModel.findOne({ correo });
-    if (usuarioCorreo) throw new Error(`Este correo ya está registrado en nuestro banco`);
-
-    const usuarioUsername = await authUserModel.findOne({ username });
-    if (usuarioUsername) throw new Error(`Este username ya está registrado en nuestro banco`);
-
-    const usuarioCelular = await authUserModel.findOne({ celular });
-    if (usuarioCelular) throw new Error(`Este celular ya está registrado en nuestro banco`);
-};
 
 export const validarCamposEditables = async (data, idUsuarioActual) => {
-    const { dpi, correo, username, NoCuenta, password } = data;
+    const { dpi, correo, username, NoCuenta } = data;
 
     if (dpi) {
         const usuarioDpi = await authUserModel.findOne({ dpi });
@@ -67,9 +53,33 @@ export const validarCamposEditables = async (data, idUsuarioActual) => {
         }
     }
 
-    
+
 };
 
+export const validarContraseñaActual = async (cliente, currentPassword, password) => {
+
+    if (password) {
+        if (!currentPassword) {
+            throw new Error('Debes proporcionar la contraseña actual para cambiarla');
+        }
+
+        const passwordValid = await verify(cliente.password, currentPassword);
+
+        if (!passwordValid) {
+            throw new Error('Contraseña actual incorrecta');
+        }
+
+
+        cliente.password = await hash(password);
+        await cliente.save();
+    }
+} 
+
+export const NoRepetirContraseña = async (datosActualizables, cliente, passwordActual, nuevaPassword) => {
+    if (passwordActual && nuevaPassword && passwordActual === nuevaPassword) {
+        throw new Error("La contraseña actual es la misma que la nueva");
+    }
+}
 
 export const validarPermisoPropietarioOAdmin = async (req, id) => {
     const usuarioLogueado = req.user;
@@ -81,12 +91,12 @@ export const validarPermisoPropietarioOAdmin = async (req, id) => {
     }
 };
 
-export const validarAprobacionPorAdmin  = async (req) => {
+export const validarAprobacionPorAdmin = async (req) => {
     const usuario = req.user;
 
     if (usuario.role !== "ADMIN") {
-        throw new Error( "No tienes permisos para aprobar clientes" );
-       
+        throw new Error("No tienes permisos para aprobar clientes");
+
     }
 };
 
@@ -106,7 +116,7 @@ export const codigoVencido = async (codigoGenerado) => {
 
 
     const currentTime = new Date();
-    const expirationTime = new Date(user.codigoGeneradoCreatedAt); 
+    const expirationTime = new Date(user.codigoGeneradoCreatedAt);
 
     expirationTime.setMinutes(expirationTime.getMinutes() + 10);
 

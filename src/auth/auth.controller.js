@@ -4,7 +4,7 @@ import { hash, verify } from "argon2";
 import {
     ingresosCuenta, validarCamposObligatorios, validarCamposEditables
     , validarPermisoPropietarioOAdmin, validarAprobacionPorAdmin,
-    validarCamposUnicos, validarActivacionCuentaStatus, codigoVencido
+     validarActivacionCuentaStatus, codigoVencido, validarContraseñaActual, NoRepetirContraseña
 } from "../helpers/db-validator-auth.js";
 import { generateJWT } from "../helpers/generate-jwt.js";
 import { sendApprovalEmail } from "../utils/sendEmail.js";
@@ -100,7 +100,6 @@ export const registerCliente = async (req, res) => {
 
         await validarCamposObligatorios(data);
         await ingresosCuenta(data.ingresos)
-        await validarCamposUnicos(data);
 
         const encryptedPassword = await hash(data.password);
 
@@ -122,6 +121,7 @@ export const registerCliente = async (req, res) => {
             correo: data.correo.toLowerCase(),
             NameTrabajo: data.NameTrabajo,
             ingresos: data.ingresos,
+            puntos: 0,
             status: false
         });
 
@@ -300,22 +300,19 @@ export const getClientesByAdmin = async (req, res) => {
     res.status(200).json(clientes);
 };
 
+
 export const updateCliente = async (req, res) => {
     try {
         const id = req.params.id;
         const data = req.body;
 
         await validarPermisoPropietarioOAdmin(req, id);
-        await validarCamposEditables(req.body, id);
-        await ingresosCuenta(data.ingresos)
+        await validarCamposEditables(data, id);
+        await ingresosCuenta(data.ingresos);
 
-        const { dpi, correo, username, NoCuenta, role, password, ...datosActualizables } = req.body;
+        const { dpi, correo, username, NoCuenta, role, passwordActual, nuevaPassword, ...datosActualizables } = data;
 
-        const cliente = await authUserModel.findByIdAndUpdate(
-            id,
-            datosActualizables,
-            { new: true }
-        );
+        const cliente = await authUserModel.findById(id);
 
         if (!cliente) {
             return res.status(404).json({
@@ -323,11 +320,18 @@ export const updateCliente = async (req, res) => {
                 msg: "Cliente no encontrado"
             });
         }
+        await validarContraseñaActual( cliente, passwordActual, nuevaPassword);
+        await NoRepetirContraseña(datosActualizables, cliente, passwordActual, nuevaPassword);
+        const clienteActualizado = await authUserModel.findByIdAndUpdate(
+            id,
+            datosActualizables,
+            { new: true }
+        );
 
         res.status(200).json({
             success: true,
             message: "Cliente actualizado",
-            cliente
+            cliente: clienteActualizado
         });
 
     } catch (error) {
@@ -337,6 +341,7 @@ export const updateCliente = async (req, res) => {
         });
     }
 };
+
 
 export const deleteCliente = async (req, res) => {
     try {
