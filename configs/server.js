@@ -6,6 +6,21 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { dbConnection } from './mongo.js';
 import limiter from '../src/middlewares/validar-cant-peticiones.js';
+import { createAdmin } from '../src/auth/auth.controller.js';
+import authRoutes from '../src/auth/auth.routes.js'
+import accountRoutes from '../src/account/account.routes.js';
+import favoritosRoutes from '../src/favoritos/favoritos.routes.js';
+import creditosRoutes from '../src/credito/credito.routes.js';
+import bankingRoutes from '../src/banking/banking.routes.js';
+import productoRoutes from '../src/productos/producto.routes.js';
+import { BancoIndustrial } from '../src/banking/banking.controller.js';
+import { BacCredomatic } from '../src/banking/banking.controller.js';
+import { Banrural } from '../src/banking/banking.controller.js';
+import { BancoPromerica } from '../src/banking/banking.controller.js';
+import transfersRoutes from '../src/transfers/transfers.routes.js';
+import interTransfersRoutes from '../src/interbank/interBankTransfer.routes.js'
+import { crearServiciosPorDefecto } from '../src/services/setupService.js';
+import shoppingRoutes from "../src/shopping/shopping.routes.js";
 
 const middlewares = (app) => {
     app.use(express.urlencoded({ extended: false }));
@@ -17,13 +32,27 @@ const middlewares = (app) => {
 }
 
 const routes = (app) => {
-
+    app.use('/users', authRoutes);
+    app.use('/cuentas', accountRoutes);
+    app.use('/favoritos', favoritosRoutes);
+    app.use('/creditos', creditosRoutes);
+    app.use('/bancos', bankingRoutes);
+    app.use('/productos', productoRoutes);
+    app.use('/transfers', transfersRoutes);
+    app.use('/interTransfers', interTransfersRoutes);
+    app.use("/shoppings", shoppingRoutes);
 }
 
 const conectarDB = async () => {
     try {
         await dbConnection();
         console.log('¡¡Conexión a la base de datos exitosa!!');
+        await createAdmin();
+        await BancoIndustrial();
+        await BacCredomatic();
+        await Banrural();
+        await BancoPromerica(); 
+        await crearServiciosPorDefecto();
     } catch (error) {
         console.error('Error al conectar a la base de datos:', error);
         process.exit(1);
