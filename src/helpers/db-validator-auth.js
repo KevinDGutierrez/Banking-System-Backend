@@ -114,7 +114,9 @@ export const validarActivacionCuentaStatus = async (user) => {
 export const codigoVencido = async (codigoGenerado) => {
     const user = await authUserModel.findOne({ codigoGenerado });
 
-
+    if (!user) {
+        throw new Error("Código inválido");
+    }
     const currentTime = new Date();
     const expirationTime = new Date(user.codigoGeneradoCreatedAt);
 

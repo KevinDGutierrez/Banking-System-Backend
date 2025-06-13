@@ -12,6 +12,6 @@ router.delete("/:id", validarJWT, deleteCliente);
 router.get("/clientes", validarJWT, getClientesByAdmin);
 router.put("/cuentas/:numeroCuenta/tipo/", validarJWT, establecerTipoCuenta);
 router.post("/recuperacion", solicitarRecuperacion);
-router.post("/reset/:codigoGenerado", resetPassword);
+router.post("/reset/", resetPassword);
 
 export default router;

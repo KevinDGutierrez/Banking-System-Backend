@@ -186,8 +186,7 @@ export const solicitarRecuperacion = async (req, res) => {
 
 export const resetPassword = async (req, res) => {
     try {
-        const { codigoGenerado } = req.params;
-        const { password } = req.body;
+        const { password, codigoGenerado} = req.body;
 
       const user = await codigoVencido(  codigoGenerado )
 
