@@ -16,6 +16,7 @@ const UserSchema = Schema({
     codigoGenerado : {type : String, unique: true}, 
     codigoGeneradoCreatedAt : {type : Date},
     puntos: { type: Number, default: 0 },
+    dinero : {type : Number, default : 0},
     status: { type: Boolean, default: false }
 }, {
     timestamps: true,
