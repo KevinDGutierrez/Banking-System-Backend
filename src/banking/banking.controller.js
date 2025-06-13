@@ -3,7 +3,7 @@ import bankingModel from "./banking.model.js";
 export const BancoIndustrial = async (req, res) => {
 
     try {
-        const verifyBanco = await bankingModel.findOne({ name: "Banco Industrial" });
+        const verifyBanco = await bankingModel.findOne({ name: "Banco Industrial".toLowerCase() });
 
         if (!verifyBanco) {
             const bancoIndustrial = new bankingModel({
@@ -26,7 +26,7 @@ export const BancoIndustrial = async (req, res) => {
 export const Banrural = async (req, res) => {
 
     try {
-        const verifyBanrural = await bankingModel.findOne({ name: "Banrural" });
+        const verifyBanrural = await bankingModel.findOne({ name: "Banrural".toLowerCase() });
 
         if (!verifyBanrural) {
             const banrural = new bankingModel({
@@ -49,7 +49,7 @@ export const Banrural = async (req, res) => {
 export const BacCredomatic = async (req, res) => {
 
     try {
-        const verifyBacCredomatic = await bankingModel.findOne({ name: "Bac Credomatic" });
+        const verifyBacCredomatic = await bankingModel.findOne({ name: "Bac Credomatic".toLowerCase() });
 
         if (!verifyBacCredomatic) {
             const bacCredomatic = new bankingModel({
@@ -69,26 +69,26 @@ export const BacCredomatic = async (req, res) => {
     }
 }
 
-export const BancoPromerica = async (req, res) => {
+export const BancoInnova = async (req, res) => {
 
     try {
-        const verifyBancoPromerica = await bankingModel.findOne({ name: "Banco Promerica" });
+        const verifyBancoInnova = await bankingModel.findOne({ name: "Banco Innova".toLowerCase() });
 
-        if (!verifyBancoPromerica) {
-            const bancoPromerica = new bankingModel({
-                name: "Banco Promerica",
+        if (!verifyBancoInnova) {
+            const bancoInnova = new bankingModel({
+                name: "Banco Innova",
                 description: "Banco de los emprendedores",
                 pais: "Guatemala",
                 moneda: "GTQ",
                 status: "active"
             })
-            await bancoPromerica.save()
-            console.log("Banco Promerica creado")
+            await bancoInnova.save()
+            console.log("Banco Innova creado")
         } else {
-            console.log("Banco Promerica ya existe, no se volvio a crear")
+            console.log("Banco Innova ya existe, no se volvio a crear")
         }
     } catch (error) {
-        console.error("Error al crear Banco Promerica", error)
+        console.error("Error al crear Banco Innova", error)
     }
 }
 

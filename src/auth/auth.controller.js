@@ -4,13 +4,16 @@ import { hash, verify } from "argon2";
 import {
     ingresosCuenta, validarCamposObligatorios, validarCamposEditables
     , validarPermisoPropietarioOAdmin, validarAprobacionPorAdmin,
-    validarCamposUnicos, validarActivacionCuentaStatus
+     validarActivacionCuentaStatus, codigoVencido, validarContraseñaActual, NoRepetirContraseña
 } from "../helpers/db-validator-auth.js";
 import { generateJWT } from "../helpers/generate-jwt.js";
 import { sendApprovalEmail } from "../utils/sendEmail.js";
 import accountModel from "../account/account.model.js";
 import { validarTipoCuenta } from "../helpers/db-validator-cuenta.js";
 import bankingModel from "../banking/banking.model.js";
+import { sendResetEmail } from "../utils/sendRecuperacion.js";
+import { generateResetToken } from "../helpers/generateResetToken.js";
+import jwt from "jsonwebtoken";
 
 export const createAdmin = async () => {
     try {
@@ -97,7 +100,6 @@ export const registerCliente = async (req, res) => {
 
         await validarCamposObligatorios(data);
         await ingresosCuenta(data.ingresos)
-        await validarCamposUnicos(data);
 
         const encryptedPassword = await hash(data.password);
 
@@ -106,19 +108,20 @@ export const registerCliente = async (req, res) => {
         };
 
         const noCuentaGenerado = generateAccountNumber();
-        const banco = await bankingModel.findOne({ name: "Banco Promerica" });
+        const banco = await bankingModel.findOne({ name: "banco innova" });
 
         const nuevoCliente = await authUserModel.create({
-            name: data.name,
-            username: data.username,
+            name: data.name.toLowerCase(),
+            username: data.username.toLowerCase(),
             NoCuenta: noCuentaGenerado,
             password: encryptedPassword,
             dpi: data.dpi,
             direccion: data.direccion,
             celular: data.celular,
-            correo: data.correo,
+            correo: data.correo.toLowerCase(),
             NameTrabajo: data.NameTrabajo,
             ingresos: data.ingresos,
+            puntos: 0,
             status: false
         });
 
@@ -144,9 +147,73 @@ export const registerCliente = async (req, res) => {
     }
 };
 
+export const solicitarRecuperacion = async (req, res) => {
+    try {
+        const { correo } = req.body;
+
+        const user = await authUserModel.findOne({ correo: correo.toLowerCase() });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                msg: "Usuario no encontrado"
+            });
+        }
+        const generateSixDigitCode = () => Math.floor(100000 + Math.random() * 900000);
+        const codigo  = generateSixDigitCode();
+        const codigoGeneradoCreatedAt  = new Date();
+
+        user.codigoGenerado = codigo.toString();
+        user.codigoGeneradoCreatedAt = codigoGeneradoCreatedAt;
+        await user.save();
+        
+
+        await sendResetEmail(user.correo, user.name, codigo);
+
+        res.status(200).json({
+            success: true,
+            msg: "Correo de recuperación enviado exitosamente"
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            msg: "Error al enviar el correo de recuperación",
+            error: error.message
+        });
+    }
+}
+
+export const resetPassword = async (req, res) => {
+    try {
+        const { password, codigoGenerado} = req.body;
+
+      const user = await codigoVencido(  codigoGenerado )
+
+        const validPassword = await hash(password);
+
+        user.password = validPassword;
+        user.codigoGenerado = null;
+        user.codigoGeneradoCreatedAt = null;
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            msg: "Contraseña actualizada correctamente"
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            msg: "Error al actualizar la contraseña",
+            error: error.message
+        });
+    }}
+
+
 export const establecerTipoCuenta = async (req, res) => {
     try {
-        const { tipo, entidadBancaria } = req.body;
+        const { tipo } = req.body;
         const { numeroCuenta } = req.params;
         const userId = req.user.id;
 
@@ -169,7 +236,7 @@ export const establecerTipoCuenta = async (req, res) => {
         }
 
         cuenta.tipo = tipo;
-        await cuenta.save();
+        await cuenta.save(tipo);
         res.status(200).json({
             success: true,
             msg: "Tipo de cuenta actualizado correctamente",
@@ -232,22 +299,19 @@ export const getClientesByAdmin = async (req, res) => {
     res.status(200).json(clientes);
 };
 
+
 export const updateCliente = async (req, res) => {
     try {
         const id = req.params.id;
         const data = req.body;
 
         await validarPermisoPropietarioOAdmin(req, id);
-        await validarCamposEditables(req.body, id);
-        await ingresosCuenta(data.ingresos)
+        await validarCamposEditables(data, id);
+        await ingresosCuenta(data.ingresos);
 
-        const { dpi, correo, username, NoCuenta, role, password, ...datosActualizables } = req.body;
+        const { dpi, correo, username, NoCuenta, role, passwordActual, nuevaPassword, ...datosActualizables } = data;
 
-        const cliente = await authUserModel.findByIdAndUpdate(
-            id,
-            datosActualizables,
-            { new: true }
-        );
+        const cliente = await authUserModel.findById(id);
 
         if (!cliente) {
             return res.status(404).json({
@@ -255,11 +319,18 @@ export const updateCliente = async (req, res) => {
                 msg: "Cliente no encontrado"
             });
         }
+        await validarContraseñaActual( cliente, passwordActual, nuevaPassword);
+        await NoRepetirContraseña(datosActualizables, cliente, passwordActual, nuevaPassword);
+        const clienteActualizado = await authUserModel.findByIdAndUpdate(
+            id,
+            datosActualizables,
+            { new: true }
+        );
 
         res.status(200).json({
             success: true,
             message: "Cliente actualizado",
-            cliente
+            cliente: clienteActualizado
         });
 
     } catch (error) {
@@ -269,6 +340,7 @@ export const updateCliente = async (req, res) => {
         });
     }
 };
+
 
 export const deleteCliente = async (req, res) => {
     try {
