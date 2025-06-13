@@ -122,6 +122,7 @@ export const registerCliente = async (req, res) => {
             NameTrabajo: data.NameTrabajo,
             ingresos: data.ingresos,
             puntos: 0,
+            dinero: 0,
             status: false
         });
 
@@ -188,6 +189,7 @@ export const resetPassword = async (req, res) => {
     try {
         const { password, codigoGenerado} = req.body;
 
+     console.log("Datos recibidos:", { password, codigoGenerado });
       const user = await codigoVencido(  codigoGenerado )
 
         const validPassword = await hash(password);
