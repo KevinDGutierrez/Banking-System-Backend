@@ -65,7 +65,8 @@ export const obtenerTodasCuentas = async (req, res) => {
       });
     }
 
-    const cuentas = await accountModel.find().populate("propietario", "nombre correo");
+    const cuentas = await accountModel.find().populate("propietario", "nombre correo")
+    .populate("entidadBancaria", "name")
 
     res.status(200).json(cuentas);
   } catch (error) {
