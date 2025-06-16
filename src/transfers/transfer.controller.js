@@ -15,7 +15,8 @@ import {
   soloAdmin,
   validarTipoCuentaReceptor,
   validarAliasReceptor,
-  validarBancoDestinoTransferencia
+  validarBancoDestinoTransferencia,
+  asignarPuntosPorTransferencias
 } from '../helpers/db-validator-tranfers.js';
 
 export const realizarTransferencia = async (req = request, res = response) => {
@@ -76,7 +77,7 @@ export const realizarTransferencia = async (req = request, res = response) => {
     cuentaEmisor.saldo -= montoDescontar;
     cuentaReceptorDB.saldo += montoRecibir;
     await Promise.all([cuentaEmisor.save(), cuentaReceptorDB.save()]);
-
+    await asignarPuntosPorTransferencias(userId);
     return res.status(201).json({
       success: true,
       msg: 'Transferencia realizada exitosamente.',

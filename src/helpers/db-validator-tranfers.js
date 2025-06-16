@@ -1,6 +1,8 @@
 import Cuenta from "../account/account.model.js";
 import Transfers from "../transfers/transfer.model.js";
 import Banking from "../banking/banking.model.js";
+import User from "../auth/authUser.model.js";
+import InterbankTransfer from "../interbank/interBankTransfer.model.js";
 import { obtenerTipoCambio } from "../utils/apiDivisa.js";
 import dayjs from 'dayjs';
 
@@ -151,15 +153,36 @@ export const validarBancoDestinoTransferencia = async ({ bancoReceptor, tipoTran
     throw new Error("El banco receptor no es válido o está inactivo");
   }
 
-  const esBancoPromerica = banco.name.toLowerCase() === 'banco promerica';
+  const esBancoInnova = banco.name.toLowerCase() === 'banco innova';
 
-  if (tipoTransferencia === 'normal' && !esBancoPromerica) {
-    throw new Error("Las transferencias normales solo se pueden realizar al Banco Promerica");
+  if (tipoTransferencia === 'normal' && !esBancoInnova) {
+    throw new Error("Las transferencias normales solo se pueden realizar al Banco Innova");
   }
 
-  if (tipoTransferencia === 'interbancaria' && esBancoPromerica) {
-    throw new Error("Las transferencias interbancarias no se pueden realizar al Banco Promerica");
+  if (tipoTransferencia === 'interbancaria' && esBancoInnova) {
+    throw new Error("Las transferencias interbancarias no se pueden realizar al Banco Innova");
   }
 
   return banco;
 };
+
+export const asignarPuntosPorTransferencias = async (userId) => {
+  
+  const totalTransfer = await Transfers.countDocuments({ emisor: userId });
+
+  const totalInterbankTransfer = await InterbankTransfer.countDocuments({ emisor: userId });
+
+  const totalTransferencias = totalTransfer + totalInterbankTransfer;
+
+  if (totalTransferencias > 0 && totalTransferencias % 5 === 0) {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error("Usuario no encontrado para asignar puntos");
+    }
+
+    user.puntos += 500;
+    await user.save();
+
+    console.log(`Se han asignado 500 puntos al usuario ${user.username} por alcanzar ${totalTransferencias} transferencias`);
+  }
+}
