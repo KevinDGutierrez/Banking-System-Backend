@@ -12,7 +12,8 @@ import {
   validarAliasReceptor,
   soloClient,
   soloAdmin,
-  validarBancoDestinoTransferencia
+  validarBancoDestinoTransferencia,
+  asignarPuntosPorTransferencias
 } from '../helpers/db-validator-tranfers.js';
 import { verificarSiCuentaEsDePromerica } from '../middlewares/validar-cuenta.js';
 
@@ -93,6 +94,8 @@ export const realizarTransferenciaInterbancaria = async (req = request, res = re
 
     cuentaEmisor.saldo -= monto;
     await cuentaEmisor.save();
+
+    await asignarPuntosPorTransferencias(userId);
 
     const cuentaReceptora = await Cuenta.findOne({
       numeroCuenta: cuentaReceptorExterno,
