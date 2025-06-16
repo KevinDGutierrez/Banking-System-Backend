@@ -25,3 +25,16 @@ export const validarAprobacionPorAdmin = async (req) => {
 
   }
 };
+
+
+export const saldoCuenta = async (saldo = '') => {
+  if(!saldo || Number(saldo) < 100) {
+    throw new Error("El saldo de su cuenta bancaria debe ser mayor o igual a Q100");
+  }
+}
+
+export const eliminarCuentAdmin = async (req) => {
+  const user = req.user;
+  if (user.role !== "ADMIN") {
+    throw new Error("No tienes permisos para eliminar cuentas");
+  }}

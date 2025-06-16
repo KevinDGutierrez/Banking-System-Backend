@@ -104,7 +104,7 @@ export const registerCliente = async (req, res) => {
         const encryptedPassword = await hash(data.password);
 
         const generateAccountNumber = () => {
-            return Math.floor(100000000 + Math.random() * 900000000).toString();
+            return Math.floor(Math.random()*(9999999999 - 1000000000 + 1000000000)).toString();;
         };
 
         const noCuentaGenerado = generateAccountNumber();
@@ -122,7 +122,6 @@ export const registerCliente = async (req, res) => {
             NameTrabajo: data.NameTrabajo,
             ingresos: data.ingresos,
             puntos: 0,
-            dinero: 0,
             status: false
         });
 
