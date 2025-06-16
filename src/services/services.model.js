@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 
-const ProductoSchema = Schema({
+const ServicioSchema = Schema({
     nombre: {
         type: String,
         required: [true, "El nombre es requerido!"],
@@ -13,17 +13,6 @@ const ProductoSchema = Schema({
         required: [true, "La descripción es requerida!"],
         maxLength: [5000, "El máximo de carácteres es 5,000!"],
     },
-
-    // Cantidad de productos disponibles
-    existencias: {
-        type: Number,
-        required: [true, "La cantidad de existencias es requerida!"],
-        max: [100, "El máximo de existentes es 100!"],
-        min: [1, "El mínimo de existentes es 1!"],
-        default: 1
-    },
-
-    // Precio del producto, ya sea "GTQ, USD, EUR"
     precio: {
         type: Number,
         required: [true, "El precio es requerido!"],
@@ -31,8 +20,6 @@ const ProductoSchema = Schema({
         min: [1, "El mínimo del precio es 1!"],
         default: 1
     },
-
-    // Puntos para poder canjear productos en lugar de cash
     puntos: {
         type: Number,
         required: [true, "La cantidad de puntos es requerida!"],
@@ -57,4 +44,4 @@ const ProductoSchema = Schema({
     versionKey: false
 });
 
-export default model('Producto', ProductoSchema);
+export default model('Servicio', ServicioSchema);
