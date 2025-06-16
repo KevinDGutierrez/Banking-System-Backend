@@ -3,9 +3,11 @@ import {
     postDeposit,
     postDepositWithExchange,
     getDepositById,
+    getDepositsByAccount,
     getDeposits,
     putDeposit,
-    deleteDeposit } from "./deposit.controller.js";
+    deleteDeposit ,
+    getDepositStats} from "./deposit.controller.js";
 import { validarJWT } from "../middlewares/validar-jwt.js";
 import { tieneRole } from "../middlewares/validar-roles.js";
 
