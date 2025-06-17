@@ -1,6 +1,6 @@
 import accountModel from "./account.model.js";
 import bankingModel from "../banking/banking.model.js";
-import { validarTipoCuenta, validarAprobacionPorAdmin, saldoCuenta, eliminarCuentAdmin } from "../helpers/db-validator-cuenta.js";
+import { validarTipoCuenta, validarAprobacionPorAdmin, saldoCuenta, eliminarCuentAdmin, validarVerCuentasPorAdmin } from "../helpers/db-validator-cuenta.js";
 
 export const crearCuenta = async (req, res) => {
   try {
@@ -58,13 +58,8 @@ export const obtenerCuentasPorUsuario = async (req, res) => {
 export const obtenerTodasCuentas = async (req, res) => {
   try {
     const user = req.user;
-    if (user.role !== "ADMIN") {
-      console.log(user.role)
-      return res.status(403).json({
-        success: false,
-        msg: "No tienes permisos para ver todas las cuentas"
-      });
-    }
+    
+    await validarVerCuentasPorAdmin(req)
 
     const cuentas = await accountModel.find().populate('entidadBancaria', 'name')
     .populate('propietario', 'correo');

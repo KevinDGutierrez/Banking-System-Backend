@@ -21,6 +21,19 @@ export const validarCamposObligatorios = async (data) => {
 };
 
 
+export const Dpidigities = async (dpi = '') => {
+   if(!dpi || dpi.length !== 13) {
+       throw new Error("Dpi debe tener 13 dígitos");
+   }
+};
+
+export const Celulardigits = async (celular = '') => {
+    if(!celular || celular.length !== 8) {
+        throw new Error("Celular debe tener 8 dígitos");
+    }
+};
+
+
 
 export const validarCamposEditables = async (data, idUsuarioActual) => {
     const { dpi, correo, username, NoCuenta } = data;
