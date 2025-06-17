@@ -18,8 +18,10 @@ export const postDeposit = async (req, res) => {
 
         // Validar si el ID de cuenta existe
         const cuentaExistente = await encontrarCuenta(cuenta);
-
-        const user = validarCuentaUsuario(cuentaExistente)
+        
+        console.log("BP")        
+        
+        const user = await validarCuentaUsuario(cuentaExistente.numeroCuenta)
 
         // Verificar que la moneda del depósito coincida con la moneda de la cuenta
         if (moneda !== cuentaExistente.moneda) {
@@ -46,7 +48,8 @@ export const postDeposit = async (req, res) => {
         if (user) {
             try {
                 await asignarPuntosPorDepositos(user._id);
-            } catch (pointsError) {
+                console.log("BP")            
+        } catch (pointsError) {
                 console.error('Error al asignar puntos:', pointsError.message);
                 // No detener la operación por error en puntos
             }
@@ -120,7 +123,7 @@ export const postDepositWithExchange = async (req, res) => {
         if (cuentaExistente.usuario) {
             try {
                 await asignarPuntosPorTransferencias(cuentaExistente.usuario);
-            } catch (pointsError) {
+        console.log("BP")            } catch (pointsError) {
                 console.error('Error al asignar puntos:', pointsError.message);
                 // No detener la operación por error en puntos
             }
@@ -226,46 +229,90 @@ export const getDepositById = async (req, res) => {
 export const putDeposit = async (req, res) => {
     try {
         const { id } = req.params;
-        const { cuenta, monto, descripcion, moneda } = req.body;
+        const { monto, descripcion, moneda } = req.body;
 
-        // Buscar el depósito actual para obtener el monto anterior
-        const depositoActual = await Deposit.findById(id);
+        // Buscar el depósito actual para obtener el monto anterior y la cuenta asociada
+        const depositoActual = await Deposit.findById(id).populate('cuenta');
         if (!depositoActual) {
-            return res.status(404).json({ 
+            return res.status(404).json({
                 success: false,
-                message: 'Depósito no encontrado' 
+                message: 'Depósito no encontrado'
             });
+        }
+
+        // Validación para asegurar que el monto es un número válido
+        if (monto && isNaN(monto)) {
+            return res.status(400).json({
+                success: false,
+                message: 'El monto debe ser un número válido'
+            });
+        }
+
+        // Verificar si la moneda ha cambiado
+        let montoConvertido = monto;
+        let tipoCambio = 1;
+
+        // Si la moneda ha cambiado, obtener el tipo de cambio a GTQ
+        if (moneda && depositoActual.moneda !== moneda) {
+            // Obtener el tipo de cambio de la moneda a GTQ
+            try {
+                tipoCambio = await obtenerTipoCambio(moneda, 'GTQ');  // Suponiendo que tienes una función para obtener el tipo de cambio
+                montoConvertido = monto * tipoCambio;  // Convertimos el monto a GTQ
+            } catch (exchangeError) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Error al obtener el tipo de cambio',
+                    error: exchangeError.message
+                });
+            }
         }
 
         // Si se está cambiando el monto, actualizar el saldo de la cuenta
         if (monto && monto !== depositoActual.monto) {
-            const cuentaExistente = await encontrarCuenta(cuenta || depositoActual.cuenta);
-            
+            const cuentaExistente = depositoActual.cuenta;  // Ahora ya tenemos la cuenta poblada
+            if (!cuentaExistente) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Cuenta asociada al depósito no encontrada'
+                });
+            }
+
             // Revertir el monto anterior y aplicar el nuevo
-            const diferencia = monto - depositoActual.monto;
-            cuentaExistente.saldo += diferencia;
+            const diferencia = montoConvertido - depositoActual.monto;
+            cuentaExistente.saldo += diferencia;  // Ajustar el saldo de la cuenta con la diferencia del monto
+
+            // Guardar la cuenta con el saldo actualizado
             await cuentaExistente.save();
         }
 
+        // Ahora que el saldo de la cuenta se actualizó, actualizamos el depósito con el nuevo monto y moneda (GTQ)
         const updatedDeposit = await Deposit.findByIdAndUpdate(
             id,
-            { cuenta, monto, descripcion, moneda },
+            { 
+                monto: montoConvertido,  // Monto actualizado en GTQ
+                descripcion,
+                moneda: 'GTQ'  // Aseguramos que la moneda sea GTQ
+            },
             { new: true, runValidators: true }
-        ).populate('cuenta');
+        ).populate('cuenta');  // Asegúrate de que el populate se hace correctamente
 
+        // Respuesta exitosa
         res.json({
             success: true,
             message: 'Depósito actualizado correctamente',
             data: updatedDeposit
         });
     } catch (error) {
-        res.status(400).json({ 
+        console.error('Error al actualizar depósito:', error);  // Para depuración
+        res.status(400).json({
             success: false,
-            message: 'Error al actualizar el depósito', 
-            error: error.message 
+            message: 'Error al actualizar el depósito',
+            error: error.message
         });
     }
-}
+};
+
+    
 
 // Eliminar (desactivar) un depósito
 export const deleteDeposit = async (req, res) => {
@@ -278,6 +325,14 @@ export const deleteDeposit = async (req, res) => {
             return res.status(404).json({ 
                 success: false,
                 message: 'Depósito no encontrado' 
+            });
+        }
+
+        // Validar si el depósito ya está desactivado
+        if (deposito.status === false) {
+            return res.status(400).json({
+                success: false,
+                message: 'El depósito ya ha sido desactivado previamente'
             });
         }
 
@@ -306,6 +361,7 @@ export const deleteDeposit = async (req, res) => {
         });
     }
 }
+
 
 // Obtener estadísticas de depósitos
 export const getDepositStats = async (req, res) => {

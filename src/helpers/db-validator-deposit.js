@@ -3,29 +3,45 @@ import Deposit from '../deposit/deposit.model.js'
 import accountModel from '../account/account.model.js'
 import authUserModel from '../auth/authUser.model.js';
 
-export const encontrarCuenta = async (id) => {
-    const cuenta = await accountModel.findById(id);
-    if (!cuenta) {
+export const encontrarCuenta = async (cuenta) => {
+    const account = await accountModel.findOne({numeroCuenta: cuenta});
+    if (!account) {
         throw new Error("Cuenta no encontrada");
     }
-    return cuenta;
+    return account;
 }
 
 export const validarCuentaUsuario = async (numeroCuenta) => {
-    // Buscar la cuenta
-    const cuenta = await accountModel.findOne({ numeroCuenta: numeroCuenta });
-    if (!cuenta) {
-        throw new Error('La cuenta especificada no existe');
+    try {
+        // Buscar la cuenta por número de cuenta
+        const cuenta = await accountModel.findOne({ numeroCuenta });
+
+        // Si no se encuentra la cuenta, lanzar error
+        if (!cuenta) {
+            throw new Error('La cuenta especificada no existe');
+        }
+
+        console.log('Cuenta encontrada:', cuenta);
+
+        // Buscar al propietario de la cuenta usando su ObjectId
+        const user = await authUserModel.findById(cuenta.propietario);
+
+        // Si no se encuentra al usuario, lanzar error
+        if (!user) {
+            throw new Error('No se pudo encontrar al propietario de la cuenta');
+        }
+
+        console.log('Usuario encontrado:', user);
+
+        // Retornar el usuario
+        return user;
+
+    } catch (error) {
+        console.error('Error al validar cuenta o usuario:', error.message);
+        throw error; // Rethrow el error para manejarlo en otro lugar si es necesario
     }
+};
 
-    user= await authUserModel.findOne({_id: cuenta.propietario})
-
-    if (!user) {
-        throw new Error('Error al encontrar usuario');
-    }
-
-    return user;
-}
 
 export const asignarPuntosPorDepositos = async(userId)=>{
 
