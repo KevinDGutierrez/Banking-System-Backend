@@ -13,14 +13,14 @@ import { tieneRole } from "../middlewares/validar-roles.js";
 
 const router= Router();
 
-router.post('/',[validarJWT,tieneRole('ADMIN')], postDeposit)
-router.post('/exchange',[validarJWT,tieneRole('ADMIN')], postDepositWithExchange)
 router.get("/",[validarJWT,tieneRole('ADMIN')], getDeposits);
 router.get('/account/:cuentaId',[validarJWT,tieneRole('ADMIN')], getDepositsByAccount) 
 router.get("/:id",[validarJWT,tieneRole('ADMIN')], getDepositById);
+router.post('/',[validarJWT,tieneRole('ADMIN')], postDeposit)
+router.post('/exchange',[validarJWT,tieneRole('ADMIN')], postDepositWithExchange)
 router.put("/:id",[validarJWT,tieneRole('ADMIN')], putDeposit);
 router.delete("/:id",[validarJWT,tieneRole('ADMIN')], deleteDeposit);
-router.get('/stats',[validarJWT,tieneRole('ADMIN')], getDepositStats)
+router.get('/stats/:id',[validarJWT,tieneRole('ADMIN')], getDepositStats)
 
 
 export default router;

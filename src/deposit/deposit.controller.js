@@ -9,6 +9,13 @@ export const postDeposit = async (req, res) => {
     try {
         const { cuenta, monto, descripcion, moneda = 'GTQ' } = req.body;
 
+         if (!cuenta || !monto ) {
+            return res.status(400).json({
+                success: false,
+                message: 'Cuenta y el monto son requeridos'
+            });
+        }
+
         // Validar si el ID de cuenta existe
         const cuentaExistente = await encontrarCuenta(cuenta);
 
@@ -303,7 +310,7 @@ export const deleteDeposit = async (req, res) => {
 // Obtener estadísticas de depósitos
 export const getDepositStats = async (req, res) => {
     try {
-        const { cuentaId } = req.query;
+        const { cuentaId } = req.params;
         
         let matchFilter = { status: true };
         if (cuentaId) {
