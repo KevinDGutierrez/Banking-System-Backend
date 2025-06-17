@@ -4,7 +4,7 @@ import { hash, verify } from "argon2";
 import {
     ingresosCuenta, validarCamposObligatorios, validarCamposEditables
     , validarPermisoPropietarioOAdmin, validarAprobacionPorAdmin,
-     validarActivacionCuentaStatus, codigoVencido, validarContraseñaActual, NoRepetirContraseña
+     validarActivacionCuentaStatus, codigoVencido, validarContraseñaActual, NoRepetirContraseña, Dpidigities, Celulardigits
 } from "../helpers/db-validator-auth.js";
 import { generateJWT } from "../helpers/generate-jwt.js";
 import { sendApprovalEmail } from "../utils/sendEmail.js";
@@ -100,6 +100,8 @@ export const registerCliente = async (req, res) => {
 
         await validarCamposObligatorios(data);
         await ingresosCuenta(data.ingresos)
+        await Dpidigities(data.dpi)
+        await Celulardigits(data.celular)
 
         const encryptedPassword = await hash(data.password);
 

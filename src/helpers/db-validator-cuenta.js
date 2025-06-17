@@ -26,6 +26,15 @@ export const validarAprobacionPorAdmin = async (req) => {
   }
 };
 
+export const validarVerCuentasPorAdmin = async (req) => {
+  const usuario = req.user;
+
+  if (usuario.role !== "ADMIN") {
+    throw new Error("No tienes permisos para ver todas las cuentas");
+
+  }
+};
+
 
 export const saldoCuenta = async (saldo = '') => {
   if(!saldo || Number(saldo) < 100) {
