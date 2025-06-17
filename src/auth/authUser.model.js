@@ -13,7 +13,7 @@ const UserSchema = Schema({
     NameTrabajo: { type: String },
     role: { type: String, enum: ["ADMIN", "CLIENTE"], default: "CLIENTE" },
     ingresos: { type: Number },
-    codigoGenerado : {type : String, unique: true}, 
+    codigoGenerado : {type : String}, 
     codigoGeneradoCreatedAt : {type : Date},
     puntos: { type: Number, default: 0 },
     status: { type: Boolean, default: false }
