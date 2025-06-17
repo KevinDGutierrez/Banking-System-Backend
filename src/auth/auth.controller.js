@@ -132,7 +132,8 @@ export const registerCliente = async (req, res) => {
             propietario: nuevoCliente._id,
             moneda: 'GTQ',
             entidadBancaria: banco._id,
-            estado: 'activa',
+            estado: 'bloqueada',
+            tipo : data.tipo,
             saldo: 0
         })
 
