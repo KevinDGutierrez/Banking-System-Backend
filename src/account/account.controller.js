@@ -58,8 +58,6 @@ export const obtenerCuentasPorUsuario = async (req, res) => {
 export const obtenerTodasCuentas = async (req, res) => {
   try {
     const user = req.user;
-    
-    await validarVerCuentasPorAdmin(req)
 
     const cuentas = await accountModel.find().populate('entidadBancaria', 'name')
     .populate('propietario', 'correo');
