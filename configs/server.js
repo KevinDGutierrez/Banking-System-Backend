@@ -17,16 +17,12 @@ import ordenRoutes from '../src/ordenes/orden.routes.js';
 import { BancoIndustrial } from '../src/banking/banking.controller.js';
 import { BacCredomatic } from '../src/banking/banking.controller.js';
 import { Banrural } from '../src/banking/banking.controller.js';
-<<<<<<< HEAD
-import { BancoInnova } from '../src/banking/banking.controller.js';
-=======
-import { BancoPromerica } from '../src/banking/banking.controller.js';
 import transfersRoutes from '../src/transfers/transfers.routes.js';
 import interTransfersRoutes from '../src/interbank/interBankTransfer.routes.js'
 import { crearServiciosPorDefecto } from '../src/services/setupService.js';
 //import shoppingRoutes from "../src/shopping/shopping.routes.js";
 
->>>>>>> b9062cc (transfers added)
+import { BancoInnova } from '../src/banking/banking.controller.js';
 const middlewares = (app) => {
     app.use(express.urlencoded({ extended: false }));
     app.use(cors());
@@ -43,19 +39,10 @@ const routes = (app) => {
     app.use('/creditos', creditosRoutes);
     app.use('/bancos', bankingRoutes);
     app.use('/productos', productoRoutes);
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-    app.use('/transfers', transfersRoutes);
-    app.use('/interTransfers', interTransfersRoutes);
-    app.use("/shoppings", shoppingRoutes);
->>>>>>> b9062cc (transfers added)
-=======
     app.use('/ordenes', ordenRoutes);
     app.use('/transfers', transfersRoutes);
     app.use('/interTransfers', interTransfersRoutes);
     //app.use("/shoppings", shoppingRoutes);
->>>>>>> b275667 (Se realizó el apartado de ordenes para poder canjear o comprar productos y servicios)
 }
 
 const conectarDB = async () => {
@@ -66,12 +53,8 @@ const conectarDB = async () => {
         await BancoIndustrial();
         await BacCredomatic();
         await Banrural();
-<<<<<<< HEAD
-        await BancoInnova(); 
-=======
-        await BancoPromerica(); 
         await crearServiciosPorDefecto();
->>>>>>> b9062cc (transfers added)
+        await BancoInnova(); 
     } catch (error) {
         console.error('Error al conectar a la base de datos:', error);
         process.exit(1);

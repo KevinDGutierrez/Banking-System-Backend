@@ -8,22 +8,13 @@ export const sendApprovalEmail = async (to, nombreCliente) => {
             port: 465,
             secure: true,
             auth: {
-<<<<<<< HEAD
                 user: "bancoinnova86@gmail.com",
                 pass: "jtrv junp cffz npvi"
-=======
-                user: "pablocastillo4821@gmail.com",
-                pass: "jytu uiqm fvlc qkdu"
->>>>>>> b9062cc (transfers added)
             }
         });
 
         const mailOptions = {
-<<<<<<< HEAD
             from: '"Banking System" <bancoinnova86@gmail.com>',
-=======
-            from: '"Banking System" <pablocastillo4821@gmail.com>',
->>>>>>> b9062cc (transfers added)
             to,
             subject: "Banking System - Aprobación de cuenta",
             text: `Hola ${nombreCliente}, tu cuenta ha sido aprobada por el administrador del banco.`
@@ -46,22 +37,13 @@ export const emailCreditoAprovado = async (to, nombreCliente, montoAprobado, mon
             port: 465,
             secure: true,
             auth: {
-<<<<<<< HEAD
                 user: "bancoinnova86@gmail.com",
                 pass: "jtrv junp cffz npvi"
-=======
-                user: "pablocastillo4821@gmail.com",
-                pass: "jytu uiqm fvlc qkdu"
->>>>>>> b9062cc (transfers added)
             }
         })
 
         const mailOptions = {
-<<<<<<< HEAD
             from: '"Banking System" <bancoinnova86@gmail.com>',
-=======
-            from: '"Banking System" <pablocastillo4821@gmail.com>',
->>>>>>> b9062cc (transfers added)
             to,
             subject: "Banking System - Aprobación de Crédito",
             text: `Hola ${nombreCliente},\n\nTu solicitud de crédito ha sido aprobada. El monto aprobado es de ${montoAprobado} ${moneda}.\n\n¡Gracias por confiar en nuestro sistema!`
