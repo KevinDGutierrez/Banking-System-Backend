@@ -11,9 +11,7 @@ export const crearCuenta = async (req, res) => {
     await saldoCuenta(saldo);
 
     const banco = await bankingModel.findOne({ name: { $regex: new RegExp(entidadBancaria, "i") } });
-    if (!banco) {
-      return res.status(404).json({ msg: "Entidad bancaria no encontrada" });
-    }
+    
 
 
     const generarNumeroCuenta = () =>
@@ -61,6 +59,7 @@ export const obtenerTodasCuentas = async (req, res) => {
   try {
     const user = req.user;
     if (user.role !== "ADMIN") {
+      console.log(user.role)
       return res.status(403).json({
         success: false,
         msg: "No tienes permisos para ver todas las cuentas"
@@ -122,5 +121,17 @@ export const deleteAccount = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Error al eliminar la cuenta", error: error.message });
+  }
+}
+
+
+export const getOpciones = async (req, res) => {
+  try {
+    const tiposCuentas = ['ahorro', 'monetaria', 'empresarial'];
+    const monedasCuentas = ['GTQ', 'USD', 'EUR'];
+    res.status(200).json({ tiposCuentas, monedasCuentas });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Error al obtener las opciones", error: error.message });
   }
 }
