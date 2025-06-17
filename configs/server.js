@@ -13,9 +13,15 @@ import favoritosRoutes from '../src/favoritos/favoritos.routes.js';
 import creditosRoutes from '../src/credito/credito.routes.js';
 import bankingRoutes from '../src/banking/banking.routes.js';
 import productoRoutes from '../src/productos/producto.routes.js';
+import ordenRoutes from '../src/ordenes/orden.routes.js';
 import { BancoIndustrial } from '../src/banking/banking.controller.js';
 import { BacCredomatic } from '../src/banking/banking.controller.js';
 import { Banrural } from '../src/banking/banking.controller.js';
+import transfersRoutes from '../src/transfers/transfers.routes.js';
+import interTransfersRoutes from '../src/interbank/interBankTransfer.routes.js'
+import { crearServiciosPorDefecto } from '../src/services/setupService.js';
+//import shoppingRoutes from "../src/shopping/shopping.routes.js";
+
 import { BancoInnova } from '../src/banking/banking.controller.js';
 const middlewares = (app) => {
     app.use(express.urlencoded({ extended: false }));
@@ -33,6 +39,10 @@ const routes = (app) => {
     app.use('/creditos', creditosRoutes);
     app.use('/bancos', bankingRoutes);
     app.use('/productos', productoRoutes);
+    app.use('/ordenes', ordenRoutes);
+    app.use('/transfers', transfersRoutes);
+    app.use('/interTransfers', interTransfersRoutes);
+    //app.use("/shoppings", shoppingRoutes);
 }
 
 const conectarDB = async () => {
@@ -43,6 +53,7 @@ const conectarDB = async () => {
         await BancoIndustrial();
         await BacCredomatic();
         await Banrural();
+        await crearServiciosPorDefecto();
         await BancoInnova(); 
     } catch (error) {
         console.error('Error al conectar a la base de datos:', error);
