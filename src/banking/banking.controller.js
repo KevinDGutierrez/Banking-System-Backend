@@ -10,7 +10,7 @@ export const BancoIndustrial = async (req, res) => {
                 name: "Banco Industrial",
                 description: "Liderezgo y Sostenibilidad",
                 pais: "Guatemala",
-                moneda: "GTQ",
+                moneda: "GTQ", 
                 status: "active"
             })
             await bancoIndustrial.save()
