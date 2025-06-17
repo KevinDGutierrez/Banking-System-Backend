@@ -13,6 +13,7 @@ import favoritosRoutes from '../src/favoritos/favoritos.routes.js';
 import creditosRoutes from '../src/credito/credito.routes.js';
 import bankingRoutes from '../src/banking/banking.routes.js';
 import productoRoutes from '../src/productos/producto.routes.js';
+import ordenRoutes from '../src/ordenes/orden.routes.js';
 import { BancoIndustrial } from '../src/banking/banking.controller.js';
 import { BacCredomatic } from '../src/banking/banking.controller.js';
 import { Banrural } from '../src/banking/banking.controller.js';
@@ -23,7 +24,7 @@ import { BancoPromerica } from '../src/banking/banking.controller.js';
 import transfersRoutes from '../src/transfers/transfers.routes.js';
 import interTransfersRoutes from '../src/interbank/interBankTransfer.routes.js'
 import { crearServiciosPorDefecto } from '../src/services/setupService.js';
-import shoppingRoutes from "../src/shopping/shopping.routes.js";
+//import shoppingRoutes from "../src/shopping/shopping.routes.js";
 
 >>>>>>> b9062cc (transfers added)
 const middlewares = (app) => {
@@ -43,11 +44,18 @@ const routes = (app) => {
     app.use('/bancos', bankingRoutes);
     app.use('/productos', productoRoutes);
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     app.use('/transfers', transfersRoutes);
     app.use('/interTransfers', interTransfersRoutes);
     app.use("/shoppings", shoppingRoutes);
 >>>>>>> b9062cc (transfers added)
+=======
+    app.use('/ordenes', ordenRoutes);
+    app.use('/transfers', transfersRoutes);
+    app.use('/interTransfers', interTransfersRoutes);
+    //app.use("/shoppings", shoppingRoutes);
+>>>>>>> b275667 (Se realizó el apartado de ordenes para poder canjear o comprar productos y servicios)
 }
 
 const conectarDB = async () => {
