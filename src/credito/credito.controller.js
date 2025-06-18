@@ -47,7 +47,7 @@ export const getCreditos = async (req = request, res = response) => {
     try {
 
         const { limite = 10, desde = 0 } = req.query;
-        const query = { status: true };
+        const query = {};
 
         const [total, creditos] = await Promise.all([
             Credito.countDocuments(query),
