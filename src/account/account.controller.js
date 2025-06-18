@@ -58,7 +58,7 @@ export const obtenerCuentasPorUsuario = async (req, res) => {
 export const obtenerTodasCuentas = async (req, res) => {
   try {
     const user = req.user;
-    
+  
    
 
     const cuentas = await accountModel.find().populate('entidadBancaria', 'name')
