@@ -49,8 +49,6 @@ export const getCreditos = async (req = request, res = response) => {
         const { limite = 10, desde = 0 } = req.query;
         const query = { status: true };
 
-        await soloAdmin(req);
-
         const [total, creditos] = await Promise.all([
             Credito.countDocuments(query),
             Credito.find(query)
@@ -82,7 +80,6 @@ export const getCreditoById = async (req, res) => {
         const { id } = req.params;
 
         await existeCreditoById(id);
-        await soloAdmin(req);
 
         const credito = await Credito.findById(id)
             .populate('user', 'username');
