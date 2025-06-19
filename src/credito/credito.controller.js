@@ -17,14 +17,13 @@ export const solicitarCredito = async (req, res) => {
         await plazoSolicitud(plazo);
         await tipoMonedaPermitida(moneda);
 
-        const cuenta = await Cuenta.findOne({ 
-            _id: cuentaId, 
-            propietario: userId, 
-            entidadBancaria: 'banco innova', 
-            estado: 'activa' 
-        })
+        const cuenta = await Cuenta.findOne({
+            _id: cuentaId,
+            propietario: userId,
+            estado: 'activa'
+        }).populate('entidadBancaria');
 
-        if (!cuenta) {
+        if (!cuenta || cuenta.entidadBancaria.name.toLowerCase() !== 'banco innova') {
             return res.status(400).json({
                 success: false,
                 msg: "La cuenta bancaria no existe o no está activa para este usuario"
