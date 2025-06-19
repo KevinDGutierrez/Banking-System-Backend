@@ -133,7 +133,7 @@ export const aprobarCredito = async (req, res = response) => {
 
         if (credito.moneda !== cuenta.moneda) {
             const tipoCambio = await obtenerTipoCambio(credito.moneda, cuenta.moneda);
-            const montoConvertido = montoAprobado / tipoCambio;
+            const montoConvertido = montoAprobado * tipoCambio;
 
             cuenta.saldo += montoConvertido;
         } else {
