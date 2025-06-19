@@ -306,7 +306,7 @@ export const getClientesByAdmin = async (req, res) => {
 
 export const updateCliente = async (req, res) => {
     try {
-        const id = req.params.id;
+        const id = req.user._id;
         const data = req.body;
 
         await validarPermisoPropietarioOAdmin(req, id);
