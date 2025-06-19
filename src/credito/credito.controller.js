@@ -36,7 +36,8 @@ export const solicitarCredito = async (req, res) => {
             moneda: moneda || 'GTQ',
             user: user._id,
             cuenta: cuenta._id,
-            username: user.username
+            username: user.username,
+            activo: true
         })
 
         await credito.save();
@@ -60,7 +61,16 @@ export const getCreditos = async (req = request, res = response) => {
     try {
 
         const { limite = 10, desde = 0 } = req.query;
-        const query = {};
+        const userId = req.user._id;
+        const esAdmin = req.user.role === 'ADMIN';
+
+        let query = { activo: true };
+
+        if (esAdmin) {
+            query.status = false;
+        } else {
+            query.user = userId;
+        }
 
         const [total, creditos] = await Promise.all([
             Credito.countDocuments(query),
@@ -170,7 +180,7 @@ export const deleteCredito = async (req, res = response) => {
         const credito = await Credito.findById(id);
         await verificarAprovacionDelete(credito);
 
-        const creditoEliminado = await Credito.findByIdAndUpdate(id, { status: false }, { new: true });
+        const creditoEliminado = await Credito.findByIdAndUpdate(id, { activo: false }, { new: true });
 
         res.status(200).json({
             success: true,

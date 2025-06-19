@@ -41,9 +41,9 @@ const CreditoSchema = Schema({
         type: Boolean,
         default: false
     },
-    yaAprobado: {
+    activo: {
         type: Boolean,
-        default: false
+        default: true
     }
 }, {
     timestamps: true,
@@ -52,7 +52,6 @@ const CreditoSchema = Schema({
 
 CreditoSchema.methods.aprobarCredito = async function (montoAprobado) {
     this.status = true;
-    this.yaAprobado = true;
     this.montoAprobado = montoAprobado || this.montoSolicitado;
     await this.save();
 }
