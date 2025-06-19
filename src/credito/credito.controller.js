@@ -8,7 +8,7 @@ import { emailCreditoAprovado } from "../utils/sendEmail.js";
 
 export const solicitarCredito = async (req, res) => {
     try {
-        const { montoSolicitado, plazo, moneda, numeroCuenta } = req.body;
+        const { montoSolicitado, plazo, moneda, cuentaId } = req.body;
         const userId = req.user._id;
         const user = await User.findById(userId);
 
@@ -17,7 +17,13 @@ export const solicitarCredito = async (req, res) => {
         await plazoSolicitud(plazo);
         await tipoMonedaPermitida(moneda);
 
-        const cuenta = await Cuenta.findOne({ numeroCuenta, propietario: userId, entidadBancaria: 'banco innova', estado: 'activa' });
+        const cuenta = await Cuenta.findOne({ 
+            _id: cuentaId, 
+            propietario: userId, 
+            entidadBancaria: 'banco innova', 
+            estado: 'activa' 
+        })
+
         if (!cuenta) {
             return res.status(400).json({
                 success: false,
