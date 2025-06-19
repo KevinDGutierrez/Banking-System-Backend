@@ -7,6 +7,11 @@ const CreditoSchema = Schema({
         required: [true, "El usuario es requerido"],
         ref: "User"
     },
+    cuenta: {
+        type: Schema.Types.ObjectId,
+        required: [true, "La cuenta bancaria es requerida"],
+        ref: "Cuenta"
+    },
     montoSolicitado: {
         type: Number,
         default: 0

@@ -8,8 +8,7 @@ import { emailCreditoAprovado } from "../utils/sendEmail.js";
 
 export const solicitarCredito = async (req, res) => {
     try {
-
-        const { montoSolicitado, plazo, moneda } = req.body;
+        const { montoSolicitado, plazo, moneda, numeroCuenta } = req.body;
         const userId = req.user._id;
         const user = await User.findById(userId);
 
@@ -18,11 +17,20 @@ export const solicitarCredito = async (req, res) => {
         await plazoSolicitud(plazo);
         await tipoMonedaPermitida(moneda);
 
+        const cuenta = await Cuenta.findOne({ numeroCuenta, propietario: userId, entidadBancaria: 'banco innova', estado: 'activa' });
+        if (!cuenta) {
+            return res.status(400).json({
+                success: false,
+                msg: "La cuenta bancaria no existe o no está activa para este usuario"
+            })
+        }
+
         const credito = await Credito.create({
             montoSolicitado,
             plazo,
             moneda: moneda || 'GTQ',
             user: user._id,
+            cuenta: cuenta._id,
             username: user.username
         })
 
@@ -53,6 +61,7 @@ export const getCreditos = async (req = request, res = response) => {
             Credito.countDocuments(query),
             Credito.find(query)
                 .populate('user', 'username')
+                .populate('cuenta', 'numeroCuenta tipoCuenta moneda')
                 .skip(Number(desde))
                 .limit(Number(limite))
                 .sort({ createdAt: -1 })
@@ -82,7 +91,8 @@ export const getCreditoById = async (req, res) => {
         await existeCreditoById(id);
 
         const credito = await Credito.findById(id)
-            .populate('user', 'username');
+            .populate('user', 'username')
+            .populate('cuenta', 'numeroCuenta tipoCuenta moneda');
 
         res.status(200).json({
             success: true,
@@ -113,7 +123,7 @@ export const aprobarCredito = async (req, res = response) => {
         await montoAprovacion(montoAprobado, credito);
         await credito.aprobarCredito(montoAprobado);
 
-        const cuenta = await Cuenta.findOne({ propietario: credito.user, estado: 'activa' });
+        const cuenta = await Cuenta.findById(credito.cuenta);
         await cuentaActiva(cuenta);
 
         if (credito.moneda !== cuenta.moneda) {
