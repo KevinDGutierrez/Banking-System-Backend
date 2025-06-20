@@ -94,15 +94,24 @@ export const NoRepetirContraseña = async (datosActualizables, cliente, password
     }
 }
 
-export const validarPermisoPropietarioOAdmin = async (req, id) => {
-    const usuarioLogueado = req.user;
+export const validarPermisoPropietarioOAdmin = async (req) => {
+     const usuario = req.user;
 
-    if (usuarioLogueado.role !== "ADMIN" && usuarioLogueado._id.toString() !== id) {
-        const error = new Error("No tienes permisos para realizar esta acción");
-        error.status = 403;
-        throw error;
+    if (usuario.role !== "ADMIN") {
+        throw new Error("No tienes permisos para realizar esta acción");
+
     }
 };
+
+export const validarNoEditarADMIN = async (id) => {
+    const user = await authUserModel.findById(id);
+
+    if(user.username === "ADMINB" || user.role === "ADMIN") {
+        throw new Error("No se puede actualizar el usuario ADMIN");
+    }
+};
+
+
 
 export const validarAprobacionPorAdmin = async (req) => {
     const usuario = req.user;

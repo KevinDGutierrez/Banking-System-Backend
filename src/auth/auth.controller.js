@@ -4,7 +4,7 @@ import { hash, verify } from "argon2";
 import {
     ingresosCuenta, validarCamposObligatorios, validarCamposEditables
     , validarPermisoPropietarioOAdmin, validarAprobacionPorAdmin,
-     validarActivacionCuentaStatus, codigoVencido, validarContraseñaActual, NoRepetirContraseña, Dpidigities, Celulardigits
+     validarActivacionCuentaStatus, codigoVencido, validarContraseñaActual, NoRepetirContraseña, Dpidigities, Celulardigits, validarNoEditarADMIN
 } from "../helpers/db-validator-auth.js";
 import { generateJWT } from "../helpers/generate-jwt.js";
 import { sendApprovalEmail } from "../utils/sendEmail.js";
@@ -308,11 +308,10 @@ export const updateCliente = async (req, res) => {
     try {
         const id = req.user._id;
         const data = req.body;
-
-        await validarPermisoPropietarioOAdmin(req, id);
         await validarCamposEditables(data, id);
         await ingresosCuenta(data.ingresos);
         await Celulardigits(data.celular)
+        await validarNoEditarADMIN(id);
 
         const { dpi, correo, username, NoCuenta, role, passwordActual, nuevaPassword, ...datosActualizables } = data;
 
@@ -339,12 +338,55 @@ export const updateCliente = async (req, res) => {
         });
 
     } catch (error) {
+        console.log(error);
         res.status(400).json({
             success: false,
             msg: error.message
         });
     }
 };
+
+export const updtateClienteAdmin = async (req, res) => {
+    try {
+        const {id} = req.params || {}
+        const {_id, correo, username, dpi, NoCuenta, role, passwordActual, nuevaPassword, ...data} = req.body;
+        let {name, direccion, celular, NameTrabajo, ingresos } = req.body || {};
+
+        const user = await authUserModel.findById(id);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                msg: "Usuario no encontrado"
+            });
+        }
+
+        await validarPermisoPropietarioOAdmin(req, id);
+        await validarCamposEditables(data, id);
+        await ingresosCuenta(ingresos);
+        await Celulardigits(celular)
+        await validarNoEditarADMIN(id);
+
+        const updateUser = await authUserModel.findByIdAndUpdate(
+            id,
+            { name, direccion, celular, NameTrabajo, ingresos },
+            { new: true }
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Cliente actualizado",
+            user: updateUser
+        });
+
+    } catch (error){
+        console.log(error)
+        res.status(400).json({
+            success: false,
+            msg: error.message
+        });
+    }
+}
 
 
 export const deleteCliente = async (req, res) => {
