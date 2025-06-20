@@ -312,6 +312,7 @@ export const updateCliente = async (req, res) => {
         await validarPermisoPropietarioOAdmin(req, id);
         await validarCamposEditables(data, id);
         await ingresosCuenta(data.ingresos);
+        await Celulardigits(data.celular)
 
         const { dpi, correo, username, NoCuenta, role, passwordActual, nuevaPassword, ...datosActualizables } = data;
 
