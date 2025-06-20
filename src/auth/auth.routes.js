@@ -7,7 +7,7 @@ const router = Router()
 router.post("/register", registerCliente)
 router.post("/login", login)
 router.put("/:id/aprobar", validarJWT, aprobarCliente);
-router.put("/", validarJWT, updateCliente);
+router.put("/clientes", validarJWT, updateCliente);
 router.put("/admin/:id", validarJWT, updtateClienteAdmin);
 router.delete("/", validarJWT, deleteCliente);
 router.get("/clientes", validarJWT, getClientesByAdmin);
