@@ -38,12 +38,7 @@ export const Celulardigits = async (celular = '') => {
 export const validarCamposEditables = async (data, idUsuarioActual) => {
     const { dpi, correo, username, NoCuenta } = data;
 
-    if (dpi) {
-        const usuarioDpi = await authUserModel.findOne({ dpi });
-        if (usuarioDpi && usuarioDpi._id.toString() !== idUsuarioActual) {
-            throw new Error(`El DPI ya está en uso`);
-        }
-    }
+    
 
     if (correo) {
         const usuarioCorreo = await authUserModel.findOne({ correo });
@@ -93,6 +88,8 @@ export const NoRepetirContraseña = async (datosActualizables, cliente, password
         throw new Error("La contraseña actual es la misma que la nueva");
     }
 }
+
+
 
 export const validarPermisoPropietarioOAdmin = async (req) => {
      const usuario = req.user;

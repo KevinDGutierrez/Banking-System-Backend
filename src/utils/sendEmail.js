@@ -9,7 +9,7 @@ export const sendApprovalEmail = async (to, nombreCliente) => {
             secure: true,
             auth: {
                 user: "bancoinnova86@gmail.com",
-                pass: "jtrv junp cffz npvi"
+                pass: "hmeb vaml fmto yxam"
             }
         });
 
@@ -38,7 +38,7 @@ export const emailCreditoAprovado = async (to, nombreCliente, montoAprobado, mon
             secure: true,
             auth: {
                 user: "bancoinnova86@gmail.com",
-                pass: "jtrv junp cffz npvi"
+                pass: "hmeb vaml fmto yxam"
             }
         })
 
@@ -56,5 +56,36 @@ export const emailCreditoAprovado = async (to, nombreCliente, montoAprobado, mon
     } catch (error) {
         console.error("Error al enviar el correo:", error.message);
         throw new Error("No se pudo enviar el correo de aprobación de crédito");
+    }
+}
+
+export const cambioDeDatos = async (to, nombreCliente, datos) => {
+    try {
+        const transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
+            auth: {
+                user: "bancoinnova86@gmail.com",
+                pass: "hmeb vaml fmto yxam"
+            }
+        })
+        const cambios = Object.entries(datos)
+            .map(([key, value]) => `- ${key}: ${value}`)
+            .join('\n');
+        const mailOptions = {
+            from: '"Banking System" <bancoinnova86@gmail.com>',
+            to,
+            subject: "Banking System - Cambio de datos",
+            text: `Hola ${nombreCliente}, \n\nLos datos que se han actualizado son los siguientes: \n\n ${cambios}`
+        }
+
+        console.log(`Enviando correo a ${to}`);
+        await transporter.sendMail(mailOptions);
+        console.log("Correo enviado exitosamente");
+
+    } catch (error) {
+        console.error("Error al enviar el correo:", error.message);
+        throw new Error("No se pudo enviar el correo de cambio de datos");
     }
 }

@@ -8,7 +8,7 @@ export const sendResetEmail = async (to, name, text) => {
             secure: true,
             auth: {
                 user: "bancoinnova86@gmail.com",
-                pass: "jtrv junp cffz npvi"
+                pass: "hmeb vaml fmto yxam"
             }
         });
 

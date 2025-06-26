@@ -4,10 +4,10 @@ import { hash, verify } from "argon2";
 import {
     ingresosCuenta, validarCamposObligatorios, validarCamposEditables
     , validarPermisoPropietarioOAdmin, validarAprobacionPorAdmin,
-     validarActivacionCuentaStatus, codigoVencido, validarContraseñaActual, NoRepetirContraseña, Dpidigities, Celulardigits, validarNoEditarADMIN
+    validarActivacionCuentaStatus, codigoVencido, validarContraseñaActual, NoRepetirContraseña, Dpidigities, Celulardigits, validarNoEditarADMIN
 } from "../helpers/db-validator-auth.js";
 import { generateJWT } from "../helpers/generate-jwt.js";
-import { sendApprovalEmail } from "../utils/sendEmail.js";
+import { sendApprovalEmail, cambioDeDatos } from "../utils/sendEmail.js";
 import accountModel from "../account/account.model.js";
 import { validarTipoCuenta } from "../helpers/db-validator-cuenta.js";
 import bankingModel from "../banking/banking.model.js";
@@ -82,6 +82,13 @@ export const login = async (req, res) => {
                 username: user.username,
                 token: token,
                 role: user.role,
+                name: user.name,
+                correo: user.correo,
+                direccion: user.direccion,
+                celular: user.celular,
+                ingresos: user.ingresos,
+                NameTrabajo: user.NameTrabajo,
+                puntos: user.puntos,
             }
         });
     } catch (error) {
@@ -106,7 +113,7 @@ export const registerCliente = async (req, res) => {
         const encryptedPassword = await hash(data.password);
 
         const generateAccountNumber = () => {
-            return Math.floor(Math.random()*(9999999999 - 1000000000 + 1000000000)).toString();;
+            return Math.floor(Math.random() * (9999999999 - 1000000000 + 1000000000)).toString();;
         };
 
         const noCuentaGenerado = generateAccountNumber();
@@ -133,7 +140,7 @@ export const registerCliente = async (req, res) => {
             moneda: 'GTQ',
             entidadBancaria: banco._id,
             estado: 'bloqueada',
-            tipo : data.tipo,
+            tipo: data.tipo,
             saldo: 0
         })
 
@@ -163,13 +170,13 @@ export const solicitarRecuperacion = async (req, res) => {
             });
         }
         const generateSixDigitCode = () => Math.floor(100000 + Math.random() * 900000);
-        const codigo  = generateSixDigitCode();
-        const codigoGeneradoCreatedAt  = new Date();
+        const codigo = generateSixDigitCode();
+        const codigoGeneradoCreatedAt = new Date();
 
         user.codigoGenerado = codigo.toString();
         user.codigoGeneradoCreatedAt = codigoGeneradoCreatedAt;
         await user.save();
-        
+
 
         await sendResetEmail(user.correo, user.name, codigo);
 
@@ -189,10 +196,10 @@ export const solicitarRecuperacion = async (req, res) => {
 
 export const resetPassword = async (req, res) => {
     try {
-        const { password, codigoGenerado} = req.body;
+        const { password, codigoGenerado } = req.body;
 
-     console.log("Datos recibidos:", { password, codigoGenerado });
-      const user = await codigoVencido(  codigoGenerado )
+        console.log("Datos recibidos:", { password, codigoGenerado });
+        const user = await codigoVencido(codigoGenerado)
 
         const validPassword = await hash(password);
 
@@ -210,47 +217,6 @@ export const resetPassword = async (req, res) => {
         return res.status(500).json({
             success: false,
             msg: "Error al actualizar la contraseña",
-            error: error.message
-        });
-    }}
-
-
-export const establecerTipoCuenta = async (req, res) => {
-    try {
-        const { tipo } = req.body;
-        const { numeroCuenta } = req.params;
-        const userId = req.user.id;
-
-        await validarTipoCuenta(tipo);
-
-        const cuenta = await accountModel.findOne({ numeroCuenta });
-
-        if (!cuenta) {
-            return res.status(404).json({
-                success: false,
-                msg: "Cuenta no encontrada"
-            });
-        }
-
-        if (cuenta.propietario.toString() !== userId) {
-            return res.status(403).json({
-                success: false,
-                msg: "No tienes permisos para realizar esta acción"
-            });
-        }
-
-        cuenta.tipo = tipo;
-        await cuenta.save(tipo);
-        res.status(200).json({
-            success: true,
-            msg: "Tipo de cuenta actualizado correctamente",
-            cuenta
-        });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            success: false,
-            msg: "Error al actualizar tipo de cuenta",
             error: error.message
         });
     }
@@ -308,12 +274,9 @@ export const updateCliente = async (req, res) => {
     try {
         const id = req.user._id;
         const data = req.body;
-        await validarCamposEditables(data, id);
-        await ingresosCuenta(data.ingresos);
-        await Celulardigits(data.celular)
         await validarNoEditarADMIN(id);
 
-        const { dpi, correo, username, NoCuenta, role, passwordActual, nuevaPassword, ...datosActualizables } = data;
+        const { name, NoCuenta, dpi, direccion, celular, correo, NameTrabajo, role, ingresos, puntos, passwordActual, nuevaPassword, ...datosActualizables } = data;
 
         const cliente = await authUserModel.findById(id);
 
@@ -323,7 +286,7 @@ export const updateCliente = async (req, res) => {
                 msg: "Cliente no encontrado"
             });
         }
-        await validarContraseñaActual( cliente, passwordActual, nuevaPassword);
+        await validarContraseñaActual(cliente, passwordActual, nuevaPassword);
         await NoRepetirContraseña(datosActualizables, cliente, passwordActual, nuevaPassword);
         const clienteActualizado = await authUserModel.findByIdAndUpdate(
             id,
@@ -346,76 +309,135 @@ export const updateCliente = async (req, res) => {
     }
 };
 
-export const updtateClienteAdmin = async (req, res) => {
+export const updateClienteSolicitud = async (req, res) => {
+    const id = req.user._id;
+    const data = req.body;
+    const { username, password, NoCuenta, dpi, ...datosActualizables } = data;
+    const cliente = await authUserModel.findById(id);
+    
+    await validarNoEditarADMIN(id);
+    if (!cliente) {
+        throw new Error("Usuario no encontrado");
+    }
+
+    if ('ingresos' in data) {
+        await ingresosCuenta(data.ingresos);
+    }
+
+    if ('celular' in data) {
+        await Celulardigits(data.celular);
+    }
+
+    cliente.datosPendientes = datosActualizables;
+    await cliente.save();
+
+    res.status(200).json({
+        success: true,
+        message: "Espere la aprobacion de datos"
+    });
+
+}
+
+export const getMyAccount = async (req, res) => {
+    const id = req.user._id;
+    const account = await authUserModel
+    .findById(id)
+    .select("name username direccion celular correo ingresos NameTrabajo")
+
     try {
-        const {id} = req.params || {}
-        const {_id, correo, username, dpi, NoCuenta, role, passwordActual, nuevaPassword, ...data} = req.body;
-        let {name, direccion, celular, NameTrabajo, ingresos } = req.body || {};
-
-        const user = await authUserModel.findById(id);
-
-        if (!user) {
+        if (!account) {
             return res.status(404).json({
                 success: false,
-                msg: "Usuario no encontrado"
+                msg: "Cuenta no encontrada"
             });
         }
 
-        await validarPermisoPropietarioOAdmin(req, id);
-        await validarCamposEditables(data, id);
-        await ingresosCuenta(ingresos);
-        await Celulardigits(celular)
-        await validarNoEditarADMIN(id);
+        res.status(200).json({
+            success: true,
+            account
+        });
 
-        const updateUser = await authUserModel.findByIdAndUpdate(
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            msg: "Error al obtener la cuenta",
+            error: error.message
+        });
+    }
+}
+
+export const updateClienteAdmin = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { username, password, NoCuenta, dpi, ...datosActualizables } = req.body;
+        await validarAprobacionPorAdmin(req);
+
+        const cliente = await authUserModel.findById(id);
+
+        if (!cliente || !cliente.datosPendientes) {
+            throw new Error("No hay datos pendientes para actualizar");
+        }
+
+        const datosPendientes = cliente.datosPendientes;
+        const datosAprobados = {};
+
+        for (const campo in datosActualizables) {
+            if (datosPendientes.hasOwnProperty(campo)) {
+                datosAprobados[campo] = datosActualizables[campo];
+            }
+        }
+
+        const clienteActualizado = await authUserModel.findByIdAndUpdate(
             id,
-            { name, direccion, celular, NameTrabajo, ingresos },
+            {
+                $set: datosAprobados,
+                $unset: { datosPendientes: "" }
+            },
             { new: true }
         );
 
+        console.log("Correo del cliente:", cliente.correo);
+        await cambioDeDatos(cliente.correo, cliente.name, datosAprobados);
+
         res.status(200).json({
             success: true,
-            message: "Cliente actualizado",
-            user: updateUser
+            message: "Datos actualizados",
+            cliente: clienteActualizado
         });
 
-    } catch (error){
-        console.log(error)
+    } catch (error) {
+        console.log(error);
         res.status(400).json({
             success: false,
             msg: error.message
         });
     }
-}
+};
+
+export const getDatosPendientes = async (req, res) => {
+    try{
+        const cliente = await authUserModel.find({datosPendientes: {$exists : true, $ne: null}});
 
 
-export const deleteCliente = async (req, res) => {
-    try {
-        const id = req.params.id;
-        await validarPermisoPropietarioOAdmin(req, id);
-
-        const cliente = await authUserModel.findByIdAndUpdate(
-            id,
-            { status: false },
-            { new: true }
-        );
-
-        if (!cliente) {
-            return res.status(404).json({
-                success: false,
-                msg: "Cliente no encontrado",
-            });
-        }
+         const datosPendientes = cliente.map(cliente => ({
+            id: cliente._id,
+            usuario: cliente.username,
+            datosPendientes: cliente.datosPendientes
+        }));
 
         res.status(200).json({
             success: true,
-            msg: "Cuenta desactivada correctamente",
-            cliente,
+            message: "Datos pendientes obtenidos",
+            datosPendientes
         });
     } catch (error) {
-        res.status(error.status || 500).json({
+        console.log(error);
+        return res.status(500).json({
             success: false,
-            msg: error.message || "Error al desactivar cuenta",
+            msg: "Error al obtener los datos pendientes",
+            error: error.message
         });
     }
-};
+    
+}

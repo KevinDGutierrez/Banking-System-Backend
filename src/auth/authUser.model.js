@@ -15,6 +15,7 @@ const UserSchema = Schema({
     ingresos: { type: Number },
     codigoGenerado : {type : String}, 
     codigoGeneradoCreatedAt : {type : Date}, 
+    datosPendientes: {type: Object, default: null},
     puntos: { type: Number, default: 0 },
     status: { type: Boolean, default: false }
 }, {

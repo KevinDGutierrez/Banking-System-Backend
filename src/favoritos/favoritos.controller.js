@@ -38,9 +38,7 @@ export const obtenerFavoritosPorUsuario = async (req, res) => {
       })
       .populate('usuario', 'username');
 
-    if (favoritos.length === 0) {
-      return res.status(404).json({ msg: "No hay favoritos para este usuario" });
-    }
+    
 
     res.status(200).json(favoritos);
   } catch (error) {
