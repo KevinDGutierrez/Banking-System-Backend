@@ -73,15 +73,14 @@ export const login = async (req, res) => {
             });
         }
 
-        const token = await generateJWT(user._id);
+        const token = await generateJWT(user._id, user.role);
 
         res.status(200).json({
             success: true,
             msg: "Sesión iniciada exitosamente",
             userDetails: {
                 username: user.username,
-                token: token,
-                role: Buffer.from(user.role).toString('base64')
+                token: token
             }
         });
     } catch (error) {
