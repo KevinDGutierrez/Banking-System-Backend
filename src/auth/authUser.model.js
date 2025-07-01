@@ -23,6 +23,10 @@ const UserSchema = Schema({
     versionKey: false
 });
 
-
+UserSchema.methods.toJSON = function () {
+    const { __v, password, _id, role, ...user } = this.toObject();
+    user.uid = _id;
+    return user;
+}
 
 export default model('User', UserSchema)
