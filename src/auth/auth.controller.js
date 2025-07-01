@@ -12,7 +12,6 @@ import accountModel from "../account/account.model.js";
 import { validarTipoCuenta } from "../helpers/db-validator-cuenta.js";
 import bankingModel from "../banking/banking.model.js";
 import { sendResetEmail } from "../utils/sendRecuperacion.js";
-import { generateResetToken } from "../helpers/generateResetToken.js";
 import jwt from "jsonwebtoken";
 
 export const createAdmin = async () => {
