@@ -80,7 +80,8 @@ export const login = async (req, res) => {
             msg: "Sesión iniciada exitosamente",
             userDetails: {
                 username: user.username,
-                token: token
+                token: token,
+                role: token.role
             }
         });
     } catch (error) {
