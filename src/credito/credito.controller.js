@@ -63,18 +63,27 @@ export const getCreditos = async (req = request, res = response) => {
         const { limite = 10, desde = 0 } = req.query;
         const userId = req.user._id;
         const esAdmin = req.user.role === 'ADMIN';
+        const esClient = req.user.role === 'CLIENTE';
+
+        let queryClient = { activo: false };
+        if (esClient) {
+            queryClient.status = false;
+        } else {
+            queryClient.user = userId;
+        }
 
         let query = { activo: true };
-
         if (esAdmin) {
             query.status = false;
         } else {
             query.user = userId;
         }
 
+        const finalQuery = { ...query, ...queryClient };
+
         const [total, creditos] = await Promise.all([
-            Credito.countDocuments(query),
-            Credito.find(query)
+            Credito.countDocuments(finalQuery),
+            Credito.find(finalQuery)
                 .populate('user', 'username')
                 .populate('cuenta', 'numeroCuenta tipoCuenta moneda')
                 .skip(Number(desde))
