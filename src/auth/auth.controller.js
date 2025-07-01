@@ -81,7 +81,7 @@ export const login = async (req, res) => {
             userDetails: {
                 username: user.username,
                 token: token,
-                role: user.role
+                role: Buffer.from(user.role).toString('base64')
             }
         });
     } catch (error) {
