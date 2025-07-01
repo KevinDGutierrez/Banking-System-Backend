@@ -64,7 +64,7 @@ export const getCreditos = async (req = request, res = response) => {
         const userId = req.user._id;
         const esAdmin = req.user.role === 'ADMIN';
 
-        let query = { activo: true };
+        let query = { activo: false };
 
         if (esAdmin) {
             query.status = false;
