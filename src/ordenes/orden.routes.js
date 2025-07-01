@@ -26,7 +26,7 @@ router.get(
     "/getOrdenesProductos",
     [
         validarJWT,
-        tieneRole("ADMIN")
+        tieneRole("ADMIN", "CLIENTE")
     ],
     getOrdenesConProductos
 )
@@ -35,7 +35,7 @@ router.get(
     "/getOrdenesServicios",
     [
         validarJWT,
-        tieneRole("ADMIN")
+        tieneRole("ADMIN", "CLIENTE")
     ],
     getOrdenesConServicios
 )
