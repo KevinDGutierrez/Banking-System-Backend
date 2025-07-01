@@ -4,7 +4,7 @@ import Cuenta from "../account/account.model.js";
 import { request, response } from "express";
 import { obtenerTipoCambio } from "../utils/apiDivisa.js";
 import { cuentaActiva, existeCreditoById, montoAprovacion, montoSolicitud, plazoSolicitud, soloAdmin, soloClient, tipoMonedaPermitida, verificarAprovacion, verificarAprovacionDelete } from "../helpers/db-validator-creditos.js";
-import { emailCreditoAprovado } from "../utils/sendEmail.js";
+import { emailCreditoAprovado, emailCreditoNoAprovado } from "../utils/sendEmail.js";
 
 export const solicitarCredito = async (req, res) => {
     try {
@@ -181,6 +181,9 @@ export const deleteCredito = async (req, res = response) => {
         await verificarAprovacionDelete(credito);
 
         const creditoEliminado = await Credito.findByIdAndUpdate(id, { activo: false }, { new: true });
+
+        const user = await User.findById(credito.user);
+        await emailCreditoNoAprovado(user.correo, user.name, credito.moneda);
 
         res.status(200).json({
             success: true,
