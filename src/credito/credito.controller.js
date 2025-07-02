@@ -65,11 +65,21 @@ export const getCreditos = async (req = request, res = response) => {
         const esAdmin = req.user.role === 'ADMIN';
         const esClient = req.user.role === 'CLIENTE';
 
-        let queryClient = { activo: true };
+        let queryClient = {};
+        
         if (esClient) {
             queryClient.user = userId;
-        } else if (esAdmin) {
+        } 
+
+        if (esAdmin) {
             queryClient = { status: false, activo: true };
+        }
+
+        if (esClient) {
+            queryClient = {
+                $or: [{ activo: true }, { status: false, activo: false }],
+                user: userId
+            }
         }
 
         const [total, creditos] = await Promise.all([
