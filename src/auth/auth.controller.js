@@ -278,12 +278,15 @@ export const updateCliente = async (req, res) => {
                 msg: "Cliente no encontrado"
             });
         }
+
+        if (username) {
+            datosActualizables.username = username.toLowerCase();
+        }
         await validarContraseñaActual(cliente, passwordActual, nuevaPassword);
         await NoRepetirContraseña(datosActualizables, cliente, passwordActual, nuevaPassword);
         const clienteActualizado = await authUserModel.findByIdAndUpdate(
             id,
             datosActualizables,
-            username.toLowerCase(),
             { new: true }
         );
 

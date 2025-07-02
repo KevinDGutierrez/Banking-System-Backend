@@ -21,6 +21,7 @@ import { Banrural } from '../src/banking/banking.controller.js';
 import transfersRoutes from '../src/transfers/transfers.routes.js';
 import interTransfersRoutes from '../src/interbank/interBankTransfer.routes.js'
 import { crearServiciosPorDefecto } from '../src/services/setupService.js';
+import servicesRoutes from "../src/services/services.routes.js"
 //import shoppingRoutes from "../src/shopping/shopping.routes.js";
 
 import { BancoInnova } from '../src/banking/banking.controller.js';
@@ -46,6 +47,7 @@ const routes = (app) => {
     app.use('/interTransfers', interTransfersRoutes);
     //app.use("/shoppings", shoppingRoutes);
     app.use('/depositos', depositoRoutes);
+    app.use('/services', servicesRoutes)
 }
 
 const conectarDB = async () => {
