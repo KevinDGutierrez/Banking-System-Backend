@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { 
     postDeposit,
-    postDepositWithExchange,
     getDepositById,
     getDepositsByAccount,
     getDeposits,
@@ -17,7 +16,6 @@ router.get("/",[validarJWT,tieneRole('ADMIN')], getDeposits);
 router.get('/account/:cuentaId',[validarJWT,tieneRole('ADMIN')], getDepositsByAccount) 
 router.get("/:id",[validarJWT,tieneRole('ADMIN')], getDepositById);
 router.post('/',[validarJWT,tieneRole('ADMIN')], postDeposit)
-router.post('/exchange',[validarJWT,tieneRole('ADMIN')], postDepositWithExchange)
 router.put("/:id",[validarJWT,tieneRole('ADMIN')], putDeposit);
 router.delete("/:id",[validarJWT,tieneRole('ADMIN')], deleteDeposit);
 router.get('/stats/:id',[validarJWT,tieneRole('ADMIN')], getDepositStats)

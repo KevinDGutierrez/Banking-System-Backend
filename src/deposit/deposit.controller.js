@@ -6,83 +6,47 @@ import cuentaModel from '../account/account.model.js'
 
 export const postDeposit = async (req, res) => {
     try {
-        const { cuenta, monto, descripcion, moneda = 'GTQ' } = req.body;
+        const { cuenta, monto, moneda = 'GTQ', descripcion } = req.body;
 
-         if (!cuenta || !monto ) {
+        // Validaciones básicas
+        if (!cuenta || !monto) {
             return res.status(400).json({
                 success: false,
-                message: 'Cuenta y el monto son requeridos'
+                message: 'Cuenta y monto son requeridos'
             });
         }
 
+        // Buscar la cuenta existente
         const cuentaExistente = await encontrarCuenta(cuenta);
-        
-        console.log("BP")        
-        
-        const user = await validarCuentaUsuario(cuentaExistente.numeroCuenta)
+        const user = await validarCuentaUsuario(cuentaExistente.numeroCuenta);
 
-        if (moneda !== cuentaExistente.moneda) {
-            return res.status(400).json({ 
-                message: 'La moneda del depósito debe coincidir con la moneda de la cuenta' 
-            });
-        }
-
-        cuentaExistente.saldo += monto;
-        await cuentaExistente.save();
-
-        const newDeposit = new Deposit({
-            cuenta: cuentaExistente._id,
-            monto,
-            moneda,
-            descripcion
-        });
-
-        const savedDeposit = await newDeposit.save();
-
-        if (user) {
-            try {
-                await asignarPuntosPorDepositos(user._id);
-                console.log("BP")            
-        } catch (pointsError) {
-                console.error('Error al asignar puntos:', pointsError.message);
-            }
-        }
-
-        res.status(201).json({
-            success: true,
-            message: 'Depósito realizado exitosamente',
-            data: savedDeposit
-        });
-    } catch (error) {
-        res.status(400).json({ 
-            success: false,
-            message: 'Error al crear el depósito', 
-            error: error.message 
-        });
-    }
-}
-
-export const postDepositWithExchange = async (req, res) => {
-    try {
-        const { cuenta, monto, monedaOrigen, descripcion } = req.body;
-
-        if (!cuenta || !monto || !monedaOrigen) {
-            return res.status(400).json({
-                success: false,
-                message: 'Cuenta, monto y moneda de origen son requeridos'
-            });
-        }
-
-        const cuentaExistente = await encontrarCuenta(cuenta);
-        const monedaDestino = cuentaExistente.moneda;
-
-        let montoConvertido = monto;
+        // Variables para el depósito
+        let montoFinal = monto;
+        let monedaFinal = cuentaExistente.moneda;
+        let descripcionFinal = descripcion || '';
         let tipoCambio = 1;
+        let conversionInfo = null;
 
-        if (monedaOrigen !== monedaDestino) {
+        // Solo realizar conversión si las monedas son diferentes
+        if (moneda !== cuentaExistente.moneda) {
             try {
-                tipoCambio = await obtenerTipoCambio(monedaOrigen, monedaDestino);
-                montoConvertido = monto * tipoCambio;
+                tipoCambio = await obtenerTipoCambio(moneda, cuentaExistente.moneda);
+                montoFinal = monto * tipoCambio;
+                
+                // Actualizar descripción con información de conversión
+                const conversionText = `Conversión: ${monto} ${moneda} → ${montoFinal.toFixed(2)} ${cuentaExistente.moneda} (TC: ${tipoCambio})`;
+                descripcionFinal = descripcion ? 
+                    `${descripcion} | ${conversionText}` : 
+                    `Depósito con ${conversionText}`;
+
+                // Información de conversión para la respuesta
+                conversionInfo = {
+                    montoOriginal: monto,
+                    monedaOrigen: moneda,
+                    montoConvertido: parseFloat(montoFinal.toFixed(2)),
+                    monedaDestino: cuentaExistente.moneda,
+                    tipoCambio
+                };
             } catch (exchangeError) {
                 return res.status(400).json({
                     success: false,
@@ -92,50 +56,51 @@ export const postDepositWithExchange = async (req, res) => {
             }
         }
 
-        cuentaExistente.saldo += montoConvertido;
+        // Actualizar saldo de la cuenta
+        cuentaExistente.saldo += montoFinal;
         await cuentaExistente.save();
 
+        // Crear el registro del depósito
         const newDeposit = new Deposit({
             cuenta: cuentaExistente._id,
-            monto: montoConvertido, 
-            moneda: monedaDestino,
-            descripcion: descripcion ? 
-                `${descripcion} | Conversión: ${monto} ${monedaOrigen} → ${montoConvertido.toFixed(2)} ${monedaDestino} (TC: ${tipoCambio})` :
-                `Depósito con conversión: ${monto} ${monedaOrigen} → ${montoConvertido.toFixed(2)} ${monedaDestino} (TC: ${tipoCambio})`
+            monto: montoFinal,
+            moneda: monedaFinal,
+            descripcion: descripcionFinal
         });
 
         const savedDeposit = await newDeposit.save();
 
-        if (cuentaExistente.usuario) {
+        // Asignar puntos si existe usuario
+        if (user) {
             try {
-                await asignarPuntosPorTransferencias(cuentaExistente.usuario);
-        console.log("BP")            } catch (pointsError) {
+                await asignarPuntosPorDepositos(user._id);
+            } catch (pointsError) {
                 console.error('Error al asignar puntos:', pointsError.message);
             }
         }
 
-        res.status(201).json({
+        // Preparar respuesta
+        const responseData = {
             success: true,
-            message: 'Depósito con conversión realizado exitosamente',
+            message: conversionInfo ? 
+                'Depósito con conversión realizado exitosamente' : 
+                'Depósito realizado exitosamente',
             data: {
                 deposito: savedDeposit,
-                conversion: {
-                    montoOriginal: monto,
-                    monedaOrigen,
-                    montoConvertido: parseFloat(montoConvertido.toFixed(2)),
-                    monedaDestino,
-                    tipoCambio
-                }
+                ...(conversionInfo && { conversion: conversionInfo })
             }
-        });
+        };
+
+        res.status(201).json(responseData);
+
     } catch (error) {
         res.status(400).json({ 
             success: false,
-            message: 'Error al crear el depósito con conversión', 
+            message: 'Error al crear el depósito', 
             error: error.message 
         });
     }
-}
+};
 
 export const getDeposits = async (req, res) => {
     try {
