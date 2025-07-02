@@ -75,7 +75,7 @@ export const emailCreditoNoAprovado = async (to, nombreCliente, moneda) => {
             from: '"Banking System" <bancoinnova86@gmail.com>',
             to,
             subject: "Banking System - Aprobación de Crédito",
-            text: `Hola ${nombreCliente},\n\nGracias por tu solicitud de crédito. Te informamos que el monto mínimo que puedes solicitar es de ${moneda}1,000. Además, si solicitas un crédito de esta cantidad, el plazo máximo disponible será de 12 meses.\n\nSi deseas solicitar una cantidad superior, podemos ofrecerte plazos más largos. \n\nNo dudes en ponerte en contacto con nosotros si tienes alguna pregunta o si deseas más información sobre los términos disponibles.\n\nAtentamente,\nBanking System`
+            text: `Hola ${nombreCliente},\n\nTu solicitud de credito fue denegada. Te informamos que el monto mínimo que puedes solicitar es de ${moneda} 1,000. Además, si solicitas un crédito de esta cantidad, el plazo máximo disponible será de 12 meses.\n\nSi deseas solicitar una cantidad superior, podemos ofrecerte plazos más largos. \n\nNo dudes en ponerte en contacto con nosotros si tienes alguna pregunta o si deseas más información sobre los términos disponibles.\n\nAtentamente,\nBanco Innova`
         }
 
         console.log(`Enviando correo a ${to}`);
