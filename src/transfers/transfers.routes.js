@@ -22,7 +22,6 @@ router.post(
 
 router.get(
   "/",
-  validarJWT,
   getTransfers
 );
 

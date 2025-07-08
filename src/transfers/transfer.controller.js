@@ -94,7 +94,6 @@ export const realizarTransferencia = async (req = request, res = response) => {
 
 export const getTransfers = async (req = request, res = response) => {
   try {
-    await soloAdmin(req);
     const { limite = 10, desde = 0 } = req.query;
 
     const [total, transferencias] = await Promise.all([
