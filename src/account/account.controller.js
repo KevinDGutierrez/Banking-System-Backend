@@ -59,7 +59,7 @@ export const obtenerTodasCuentas = async (req, res) => {
   try {
     const user = req.user;
     const cuentas = await accountModel.find().populate('entidadBancaria', 'name')
-    .populate('propietario', 'correo');
+    .populate('propietario', 'correo name');
 
     res.status(200).json(cuentas);
   } catch (error) {
