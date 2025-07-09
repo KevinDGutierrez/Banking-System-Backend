@@ -130,7 +130,6 @@ export const realizarTransferenciaInterbancaria = async (req = request, res = re
 
 export const getInterbankTransfers = async (req = request, res = response) => {
   try {
-    await soloAdmin(req);
     const { limite = 10, desde = 0 } = req.query;
 
     const [total, transferencias] = await Promise.all([
