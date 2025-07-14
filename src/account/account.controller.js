@@ -87,7 +87,7 @@ export const aprobarCuenta = async (req, res) => {
         msg: "Cuenta no encontrada"
       });
     }
-    await sendApprovalCuenta(cuenta.propietario.name, cuenta.numeroCuenta, cuenta.tipo);
+    await sendApprovalCuenta(cuenta.propietario.correo, cuenta.propietario.name, cuenta.numeroCuenta, cuenta.tipo);
     res.status(200).json({
       success: true,
       msg: "Cuenta aprobada",
