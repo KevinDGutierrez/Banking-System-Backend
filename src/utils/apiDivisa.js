@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const obtenerTipoCambio = async (monedaCredito, monedaCuenta) => {
-    const apiKey = 'ca0af969f5d6151eb152ef4c';
+    const apiKey = 'd964c1731ae0eca03c43843c';
     const url = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/${monedaCredito}`;
 
     try {
