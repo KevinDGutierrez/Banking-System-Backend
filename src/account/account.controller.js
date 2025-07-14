@@ -1,6 +1,7 @@
 import accountModel from "./account.model.js";
 import bankingModel from "../banking/banking.model.js";
 import { validarTipoCuenta, validarAprobacionPorAdmin, saldoCuenta, eliminarCuentAdmin, validarVerCuentasPorAdmin } from "../helpers/db-validator-cuenta.js";
+import { sendApprovalCuenta } from "../utils/sendEmail.js";
 
 export const crearCuenta = async (req, res) => {
   try {
@@ -86,7 +87,7 @@ export const aprobarCuenta = async (req, res) => {
         msg: "Cuenta no encontrada"
       });
     }
-
+    await sendApprovalCuenta(cuenta.propietario.name, cuenta.numeroCuenta, cuenta.tipo);
     res.status(200).json({
       success: true,
       msg: "Cuenta aprobada",

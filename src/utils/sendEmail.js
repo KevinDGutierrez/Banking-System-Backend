@@ -29,6 +29,33 @@ export const sendApprovalEmail = async (to, nombreCliente) => {
     }
 };
 
+export const sendApprovalCuenta = async (to, nombreCuenta, numeroCuenta, tipoCuenta) => {
+    try {
+        const transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
+            auth: {
+                user: "bancoinnova72@gmail.com",
+                pass: "rmkv dsae ezqg iqgv"
+            }
+        });
+
+        const mailOptions = {
+            from: '"Banco Innova" <bancoinnova72@gmail.com>',
+            to,
+            subject: "Banco Innova - Aprobación de cuenta",
+            text: `Hola ${nombreCuenta}, tu cuenta ${tipoCuenta} con el número ${numeroCuenta} ha sido aprobada por el administrador del banco.`
+        };
+
+        console.log(`Enviando correo a ${to}`);
+        await transporter.sendMail(mailOptions);
+        console.log("Correo enviado exitosamente"); 
+    } catch (error) {
+
+    }
+}
+
 export const emailCreditoAprovado = async (to, nombreCliente, montoAprobado, moneda) => {
     try {
         const transporter = nodemailer.createTransport({
