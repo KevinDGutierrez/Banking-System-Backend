@@ -29,7 +29,7 @@ export const sendApprovalEmail = async (to, nombreCliente) => {
     }
 };
 
-export const sendApprovalCuenta = async (to, nombreCuenta, numeroCuenta, tipoCuenta) => {
+export const sendApprovalCuenta = async (to, name, numeroCuenta, tipo) => {
     try {
         const transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
@@ -45,7 +45,7 @@ export const sendApprovalCuenta = async (to, nombreCuenta, numeroCuenta, tipoCue
             from: '"Banco Innova" <bancoinnova72@gmail.com>',
             to,
             subject: "Banco Innova - Aprobación de cuenta",
-            text: `Hola ${nombreCuenta}, tu cuenta ${tipoCuenta} con el número ${numeroCuenta} ha sido aprobada por el administrador del banco.`
+            text: `Hola ${name}, tu cuenta ${tipo} con el número ${numeroCuenta} ha sido aprobada por el administrador del banco.`
         };
 
         console.log(`Enviando correo a ${to}`);

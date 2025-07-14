@@ -76,6 +76,7 @@ export const aprobarCuenta = async (req, res) => {
     await validarAprobacionPorAdmin(req);
 
     const cuenta = await accountModel.findOneAndUpdate(
+
       { numeroCuenta },
       { estado: 'activa' },
       { new: true }
@@ -88,6 +89,8 @@ export const aprobarCuenta = async (req, res) => {
       });
     }
     await sendApprovalCuenta(cuenta.propietario.correo, cuenta.propietario.name, cuenta.numeroCuenta, cuenta.tipo);
+    
+    console.log(cuenta.propietario.correo, cuenta.propietario.name, cuenta.numeroCuenta, cuenta.tipo);
     res.status(200).json({
       success: true,
       msg: "Cuenta aprobada",
