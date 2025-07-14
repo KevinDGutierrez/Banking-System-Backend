@@ -76,11 +76,10 @@ export const aprobarCuenta = async (req, res) => {
     await validarAprobacionPorAdmin(req);
 
     const cuenta = await accountModel.findOneAndUpdate(
-
       { numeroCuenta },
       { estado: 'activa' },
       { new: true }
-    )
+    ).populate('propietario', 'correo name');
 
     if (!cuenta) {
       return res.status(404).json({
