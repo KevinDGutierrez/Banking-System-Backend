@@ -7,16 +7,16 @@ export const sendResetEmail = async (to, name, text) => {
             port: 465,
             secure: true,
             auth: {
-                user: "bancoinnova86@gmail.com",
-                pass: "hmeb vaml fmto yxam"
+                user: "bancoinnova72@gmail.com",
+                pass: "rmkv dsae ezqg iqgv"
             }
         });
 
         const mailOptions = {
-            from: '"Banking System" <bancoinnova86@gmail.com>',
+            from: '"BancoInnova" <bancoinnova72@gmail.com>',
             to,
-            subject: "Banking System - Recuperación de cuenta",
-             html: `
+            subject: "Banco Innova - Recuperación de cuenta",
+            html: `
                 <h3>Hola ${name},</h3>
                 <p>Has solicitado restablecer tu contraseña.</p>
                 <p>Copia  el siguiente codigo para crear una nueva contraseña:</p>

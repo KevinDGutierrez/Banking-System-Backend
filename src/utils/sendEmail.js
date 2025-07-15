@@ -1,4 +1,3 @@
-
 import nodemailer from 'nodemailer';
 
 export const sendApprovalEmail = async (to, nombreCliente) => {
@@ -8,15 +7,15 @@ export const sendApprovalEmail = async (to, nombreCliente) => {
             port: 465,
             secure: true,
             auth: {
-                user: "bancoinnova86@gmail.com",
-                pass: "hmeb vaml fmto yxam"
+                user: "bancoinnova72@gmail.com",
+                pass: "rmkv dsae ezqg iqgv"
             }
         });
 
         const mailOptions = {
-            from: '"Banking System" <bancoinnova86@gmail.com>',
+            from: '"Banco Innova" <bancoinnova72@gmail.com>',
             to,
-            subject: "Banking System - Aprobación de cuenta",
+            subject: "Banco Innova - Aprobación de cuenta",
             text: `Hola ${nombreCliente}, tu cuenta ha sido aprobada por el administrador del banco.`
         };
 
@@ -30,6 +29,33 @@ export const sendApprovalEmail = async (to, nombreCliente) => {
     }
 };
 
+export const sendApprovalCuenta = async (to, name, numeroCuenta, tipo) => {
+    try {
+        const transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true,
+            auth: {
+                user: "bancoinnova72@gmail.com",
+                pass: "rmkv dsae ezqg iqgv"
+            }
+        });
+
+        const mailOptions = {
+            from: '"Banco Innova" <bancoinnova72@gmail.com>',
+            to,
+            subject: "Banco Innova - Aprobación de cuenta",
+            text: `Hola ${name}, tu cuenta ${tipo} con el número ${numeroCuenta} ha sido aprobada por el administrador del banco.`
+        };
+
+        console.log(`Enviando correo a ${to}`);
+        await transporter.sendMail(mailOptions);
+        console.log("Correo enviado exitosamente"); 
+    } catch (error) {
+
+    }
+}
+
 export const emailCreditoAprovado = async (to, nombreCliente, montoAprobado, moneda) => {
     try {
         const transporter = nodemailer.createTransport({
@@ -37,15 +63,15 @@ export const emailCreditoAprovado = async (to, nombreCliente, montoAprobado, mon
             port: 465,
             secure: true,
             auth: {
-                user: "bancoinnova86@gmail.com",
-                pass: "hmeb vaml fmto yxam"
+                user: "bancoinnova72@gmail.com",
+                pass: "rmkv dsae ezqg iqgv"
             }
         })
 
         const mailOptions = {
-            from: '"Banking System" <bancoinnova86@gmail.com>',
+            from: '"Banco Innova" <bancoinnova72@gmail.com>',
             to,
-            subject: "Banking System - Aprobación de Crédito",
+            subject: "Banco Innova - Aprobación de Crédito",
             text: `Hola ${nombreCliente},\n\nTu solicitud de crédito ha sido aprobada. El monto aprobado es de ${montoAprobado} ${moneda}.\n\n¡Gracias por confiar en nuestro sistema!`
         }
 
@@ -66,15 +92,15 @@ export const emailCreditoNoAprovado = async (to, nombreCliente, moneda) => {
             port: 465,
             secure: true,
             auth: {
-                user: "bancoinnova86@gmail.com",
-                pass: "hmeb vaml fmto yxam"
+                user: "bancoinnova72@gmail.com",
+                pass: "rmkv dsae ezqg iqgv"
             }
         })
 
         const mailOptions = {
-            from: '"Banking System" <bancoinnova86@gmail.com>',
+            from: '"Banco Innova" <bancoinnova72@gmail.com>',
             to,
-            subject: "Banking System - Aprobación de Crédito",
+            subject: "Banco Innova - Aprobación de Crédito",
             text: `Hola ${nombreCliente},\n\nTu solicitud de credito fue denegada. Te informamos que el monto mínimo que puedes solicitar es de ${moneda} 1,000. Además, si solicitas un crédito de esta cantidad, el plazo máximo disponible será de 12 meses.\n\nSi deseas solicitar una cantidad superior, podemos ofrecerte plazos más largos. \n\nNo dudes en ponerte en contacto con nosotros si tienes alguna pregunta o si deseas más información sobre los términos disponibles.\n\nAtentamente,\nBanco Innova`
         }
 
@@ -95,17 +121,17 @@ export const cambioDeDatos = async (to, nombreCliente, datos) => {
             port: 465,
             secure: true,
             auth: {
-                user: "bancoinnova86@gmail.com",
-                pass: "hmeb vaml fmto yxam"
+                user: "bancoinnova72@gmail.com",
+                pass: "rmkv dsae ezqg iqgv"
             }
         })
         const cambios = Object.entries(datos)
             .map(([key, value]) => `- ${key}: ${value}`)
             .join('\n');
         const mailOptions = {
-            from: '"Banking System" <bancoinnova86@gmail.com>',
+            from: '"Banco Innova" <bancoinnova72@gmail.com>',
             to,
-            subject: "Banking System - Cambio de datos",
+            subject: "Banco Innova - Cambio de datos",
             text: `Hola ${nombreCliente}, \n\nLos datos que se han actualizado son los siguientes: \n\n ${cambios}`
         }
 

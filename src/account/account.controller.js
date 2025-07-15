@@ -1,6 +1,7 @@
 import accountModel from "./account.model.js";
 import bankingModel from "../banking/banking.model.js";
 import { validarTipoCuenta, validarAprobacionPorAdmin, saldoCuenta, eliminarCuentAdmin, validarVerCuentasPorAdmin } from "../helpers/db-validator-cuenta.js";
+import { sendApprovalCuenta } from "../utils/sendEmail.js";
 
 export const crearCuenta = async (req, res) => {
   try {
@@ -59,7 +60,7 @@ export const obtenerTodasCuentas = async (req, res) => {
   try {
     const user = req.user;
     const cuentas = await accountModel.find().populate('entidadBancaria', 'name')
-    .populate('propietario', 'correo');
+    .populate('propietario', 'correo name');
 
     res.status(200).json(cuentas);
   } catch (error) {
@@ -78,7 +79,7 @@ export const aprobarCuenta = async (req, res) => {
       { numeroCuenta },
       { estado: 'activa' },
       { new: true }
-    )
+    ).populate('propietario', 'correo name');
 
     if (!cuenta) {
       return res.status(404).json({
@@ -86,7 +87,9 @@ export const aprobarCuenta = async (req, res) => {
         msg: "Cuenta no encontrada"
       });
     }
-
+    await sendApprovalCuenta(cuenta.propietario.correo, cuenta.propietario.name, cuenta.numeroCuenta, cuenta.tipo);
+    
+    console.log(cuenta.propietario.correo, cuenta.propietario.name, cuenta.numeroCuenta, cuenta.tipo);
     res.status(200).json({
       success: true,
       msg: "Cuenta aprobada",
