@@ -13,7 +13,8 @@ import {
   soloClient,
   soloAdmin,
   validarBancoDestinoTransferencia,
-  asignarPuntosPorTransferencias
+  asignarPuntosPorTransferencias,
+  validarTipoCuentaCoincide
 } from '../helpers/db-validator-tranfers.js';
 import { verificarSiCuentaEsDePromerica } from '../middlewares/validar-cuenta.js';
 
@@ -31,13 +32,11 @@ export const realizarTransferenciaInterbancaria = async (req = request, res = re
       moneda
     } = req.body;
 
-    if (
-      verificarSiCuentaEsDePromerica(cuentaReceptorExterno) &&
-      bancoReceptor.trim().toLowerCase() !== 'promerica'
-    ) {
+    const posibleCuentaInternaInnova = await Cuenta.findOne({ numeroCuenta: cuentaReceptorExterno }).populate('entidadBancaria');
+    if (posibleCuentaInternaInnova && posibleCuentaInternaInnova.entidadBancaria && posibleCuentaInternaInnova.entidadBancaria.name.toLowerCase() === 'banco innova') {
       return res.status(400).json({
         success: false,
-        msg: 'La cuenta ingresada pertenece al Banco Promerica. Este apartado es para otros bancos'
+        msg: 'La cuenta receptora pertenece a Banco Innova. Utilice la opción de transferencia interna para este tipo de cuentas.'
       });
     }
 
@@ -105,6 +104,8 @@ export const realizarTransferenciaInterbancaria = async (req = request, res = re
     });
 
     if (cuentaReceptora) {
+      validarTipoCuentaCoincide(cuentaReceptora, tipoCuentaReceptor);
+      
       cuentaReceptora.saldo += monto;
       await cuentaReceptora.save();
       console.log(`Saldo actualizado para la cuenta receptora: ${cuentaReceptorExterno}`);
