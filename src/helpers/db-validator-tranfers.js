@@ -124,10 +124,9 @@ export const validarDatosTransferenciaInterbancaria = async ({ cuentaReceptorExt
   }
 
   const banco = await Banking.findOne({ name: new RegExp(`^${bancoReceptor}$`, 'i') });
-if (!banco || banco.status !== 'active') {
-  throw new Error('El banco receptor no es válido o está inactivo');
-}
-
+  if (!banco || banco.status !== 'active') {
+    throw new Error('El banco receptor no es válido o está inactivo');
+  }
 };
 
 export const validarTipoCuentaReceptor = (tipoCuentaReceptor = '') => {
@@ -163,7 +162,31 @@ export const validarBancoDestinoTransferencia = async ({ bancoReceptor, tipoTran
     throw new Error("Las transferencias interbancarias no se pueden realizar al Banco Innova");
   }
 
-  return banco;
+  return banco; // Retorna el objeto banco encontrado
+};
+
+/**
+ * Valida que el tipo de cuenta del receptor coincida con el tipo de cuenta especificado en la solicitud.
+ * @param {object} cuentaReceptorDB - El documento de la cuenta receptora de la base de datos.
+ * @param {string} tipoCuentaReceptor - El tipo de cuenta del receptor enviado en la solicitud.
+ */
+export const validarTipoCuentaCoincide = (cuentaReceptorDB, tipoCuentaReceptor) => {
+  if (cuentaReceptorDB.tipo !== tipoCuentaReceptor) {
+    throw new Error(`El tipo de cuenta del receptor (${cuentaReceptorDB.tipo}) no coincide con el tipo especificado (${tipoCuentaReceptor}).`);
+  }
+};
+
+/**
+ * Valida que la cuenta receptora pertenezca a Banco Innova si el tipo de transferencia es 'normal'.
+ * @param {object} cuentaReceptorDB - El documento de la cuenta receptora de la base de datos (debe estar populado con 'entidadBancaria').
+ * @param {string} tipoTransferencia - El tipo de transferencia ('normal' o 'interbancaria').
+ */
+export const validarCuentaReceptorInnovaParaNormal = (cuentaReceptorDB, tipoTransferencia) => {
+  if (tipoTransferencia === 'normal') {
+    if (!cuentaReceptorDB.entidadBancaria || cuentaReceptorDB.entidadBancaria.name.toLowerCase() !== 'banco innova') {
+      throw new Error('La cuenta receptora no pertenece a Banco Innova para una transferencia normal.');
+    }
+  }
 };
 
 export const asignarPuntosPorTransferencias = async (userId) => {

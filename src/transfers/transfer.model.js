@@ -56,7 +56,13 @@ const TransferSchema = new Schema({
   referencia: {
     type: String,
     default: () => `REF-${nanoid(10)}`
+  },
+  bancoReceptor: {
+    type: Schema.Types.ObjectId,
+    ref: 'Banking',
+    required: [true, 'El banco receptor es obligatorio']
   }
+  
 }, {
   timestamps: true,
   versionKey: false

@@ -16,7 +16,9 @@ import {
   validarTipoCuentaReceptor,
   validarAliasReceptor,
   validarBancoDestinoTransferencia,
-  asignarPuntosPorTransferencias
+  asignarPuntosPorTransferencias,
+  validarTipoCuentaCoincide,
+  validarCuentaReceptorInnovaParaNormal
 } from '../helpers/db-validator-tranfers.js';
 
 export const realizarTransferencia = async (req = request, res = response) => {
@@ -32,7 +34,7 @@ export const realizarTransferencia = async (req = request, res = response) => {
       tipoTransferencia = 'normal'
     } = req.body;
 
-     const { bancoReceptor } = req.params;
+    const { bancoReceptor } = req.params;
 
     await soloClient(req);
     validarTipoCuentaReceptor(tipoCuentaReceptor);
@@ -40,13 +42,18 @@ export const realizarTransferencia = async (req = request, res = response) => {
     await validarDatosTransferencia({ cuentaReceptor, monto, moneda });
     await validarMontoTransferencia(monto);
     await validarLimiteDiario(userId, monto);
-    await validarBancoDestinoTransferencia({ bancoReceptor, tipoTransferencia });
+    
+    const bancoDestino = await validarBancoDestinoTransferencia({ bancoReceptor, tipoTransferencia });
     const cuentaEmisor = await Cuenta.findOne({ numeroCuenta: numeroCuentaEmisor, propietario: userId, estado: 'activa' });
-    const cuentaReceptorDB = await Cuenta.findOne({ numeroCuenta: cuentaReceptor, estado: 'activa' });
+    const cuentaReceptorDB = await Cuenta.findOne({ numeroCuenta: cuentaReceptor, estado: 'activa' }).populate('entidadBancaria');
 
     if (!cuentaEmisor || !cuentaReceptorDB) {
       return res.status(404).json({ success: false, msg: 'Cuenta emisora o receptora no encontrada o inactiva.' });
     }
+
+    validarCuentaReceptorInnovaParaNormal(cuentaReceptorDB, tipoTransferencia);
+
+    validarTipoCuentaCoincide(cuentaReceptorDB, tipoCuentaReceptor);
 
     await cuentasDiferentes(cuentaEmisor, cuentaReceptorDB);
     await cuentaActiva(cuentaEmisor);
@@ -71,7 +78,8 @@ export const realizarTransferencia = async (req = request, res = response) => {
       monto,
       moneda,
       aliasReceptor,
-      tipo: 'transferencia'
+      tipo: 'transferencia',
+      bancoReceptor: bancoDestino._id
     });
 
     cuentaEmisor.saldo -= montoDescontar;
