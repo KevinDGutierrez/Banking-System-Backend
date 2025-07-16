@@ -179,7 +179,7 @@ export const getUltimaTransferencia = async (req = request, res = response) => {
   const usuario = req.user;
   try {
     
-    const ultimaTransferencia = await Transfer.find({ emisor: usuario._id, monto:{ $gt: 0}}).sort({createdAt: -1}).limit(1);
+    const ultimaTransferencia = await Transfer.find({ emisor: usuario._id, monto: { $gt: 0 } }).sort({ createdAt: -1 }).limit(1);
     res.status(200).json({ ultimaTransferencia });
   } catch (error) {
     return res.status(500).json({
