@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { validarJWT } from "../middlewares/validar-jwt.js";
 import { registerCliente, login, getClientesByAdmin, updateCliente, aprobarCliente, solicitarRecuperacion, resetPassword, updateClienteAdmin
-    , updateClienteSolicitud, getMyAccount, getDatosPendientes, getClientesByAdminNumber
+    , updateClienteSolicitud, getMyAccount, getDatosPendientes, getClientesByAdminNumber, getIngresosPorUsuario, getIngresosPorUsuarioYPromedio
  } from "./auth.controller.js";
 
 const router = Router()
@@ -16,6 +16,8 @@ router.get("/myAccount", validarJWT, getMyAccount);
 router.get("/clientes/datos", validarJWT, getDatosPendientes);
 router.get("/clientes", validarJWT, getClientesByAdmin);
 router.get("/clientes/numero", validarJWT, getClientesByAdminNumber);
+router.get("/ingresos", validarJWT, getIngresosPorUsuario);
+router.get("/ingresos/promedio", validarJWT, getIngresosPorUsuarioYPromedio);
 router.post("/recuperacion", solicitarRecuperacion);
 router.post("/reset/", resetPassword);
 
