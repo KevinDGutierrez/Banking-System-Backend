@@ -42,7 +42,7 @@ export const realizarTransferencia = async (req = request, res = response) => {
     await validarDatosTransferencia({ cuentaReceptor, monto, moneda });
     await validarMontoTransferencia(monto);
     await validarLimiteDiario(userId, monto);
-    
+
     const bancoDestino = await validarBancoDestinoTransferencia({ bancoReceptor, tipoTransferencia });
     const cuentaEmisor = await Cuenta.findOne({ numeroCuenta: numeroCuentaEmisor, propietario: userId, estado: 'activa' });
     const cuentaReceptorDB = await Cuenta.findOne({ numeroCuenta: cuentaReceptor, estado: 'activa' }).populate('entidadBancaria');
@@ -157,3 +157,35 @@ export const getTransferById = async (req = request, res = response) => {
     });
   }
 };
+
+export const getNumeroTotalTransferencias = async (req = request, res = response) => {
+  const usuario = req.user;
+  try {
+    if (usuario.role !== "ADMIN") {
+      return res.status(403).json({ message: "Solo los administradores pueden  ver esta seccion" });
+    }
+    const total = await Transfer.countDocuments();
+    res.status(200).json({ total });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      msg: 'Error al obtener el numero de transferencias',
+      error: error.message
+    });
+  }
+}
+
+export const getUltimaTransferencia = async (req = request, res = response) => {
+  const usuario = req.user;
+  try {
+    
+    const ultimaTransferencia = await Transfer.find({role: "CLIENTE", emisor: usuario._id}).sort({createdAt: -1}).limit(1);
+    res.status(200).json({ ultimaTransferencia });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      msg: 'Error al obtener la ultima transferencia',
+      error: error.message
+    });
+  }
+}

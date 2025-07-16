@@ -6,7 +6,9 @@ import { validarJWT } from "../middlewares/validar-jwt.js";
 import {
   realizarTransferencia,
   getTransfers,
-  getTransferById
+  getTransferById,
+  getNumeroTotalTransferencias,
+  getUltimaTransferencia,
 } from "./transfer.controller.js";
 
 const router = Router();
@@ -23,6 +25,18 @@ router.post(
 router.get(
   "/",
   getTransfers
+);
+
+router.get(
+  "/numero",
+  validarJWT,
+  getNumeroTotalTransferencias
+);
+
+router.get(
+  "/ultima",
+  validarJWT,
+  getUltimaTransferencia
 );
 
 router.get(

@@ -4,10 +4,9 @@ import authUserModel from "../auth/authUser.model.js";
 
 export const agregarFavorito = async (req, res) => {
   try {
-    const user = req.user;
-    const { cuentaDestino, alias, tipoCuenta } = req.body;
+    const user = req.user; 
+    const { cuentaDestino, alias } = req.body;
     const cuenta = await accountModel.findOne({ numeroCuenta: cuentaDestino });
-
     const nuevoFavorito = await favoritosModel.create({
       usuario: user._id,
       cuentaDestino: cuenta._id,

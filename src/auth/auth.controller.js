@@ -254,12 +254,31 @@ export const getClientesByAdmin = async (req, res) => {
     const usuario = req.user;
 
     if (usuario.role !== "ADMIN") {
-        return res.status(403).json({ message: "Solo los administradores pueden ver la lista de clientes" });
+        return res.status(403).json({ message: "Solo los administradores pueden  ver esta seccion" });
     }
 
     const clientes = await authUserModel.find({ role: "CLIENTE" });
     res.status(200).json(clientes);
 };
+
+export const getClientesByAdminNumber = async (req, res) => {
+    const usuario = req.user;
+
+    try {
+        if (usuario.role !== "ADMIN") {
+            return res.status(403).json({ message: "Solo los administradores pueden ver esta seccion" });
+        }
+
+        const cantidadClientes = await authUserModel.countDocuments({ role: "CLIENTE" });
+        res.status(200).json({ cantidadClientes });
+    } catch (error) {
+        console.log(error)
+        return res.status(403).json({
+            success: false,
+            msg: error.message || "Ocurrio un error al traer el numero de clientes"
+        });
+    }
+}
 
 
 export const updateCliente = async (req, res) => {
@@ -310,7 +329,7 @@ export const updateClienteSolicitud = async (req, res) => {
     const data = req.body;
     const { username, password, NoCuenta, dpi, ...datosActualizables } = data;
     const cliente = await authUserModel.findById(id);
-    
+
     await validarNoEditarADMIN(id);
     if (!cliente) {
         throw new Error("Usuario no encontrado");
@@ -337,8 +356,8 @@ export const updateClienteSolicitud = async (req, res) => {
 export const getMyAccount = async (req, res) => {
     const id = req.user._id;
     const account = await authUserModel
-    .findById(id)
-    .select("name username direccion celular correo ingresos NameTrabajo")
+        .findById(id)
+        .select("name username direccion celular correo ingresos NameTrabajo")
 
     try {
         if (!account) {
@@ -412,11 +431,11 @@ export const updateClienteAdmin = async (req, res) => {
 };
 
 export const getDatosPendientes = async (req, res) => {
-    try{
-        const cliente = await authUserModel.find({datosPendientes: {$exists : true, $ne: null}});
+    try {
+        const cliente = await authUserModel.find({ datosPendientes: { $exists: true, $ne: null } });
 
 
-         const datosPendientes = cliente.map(cliente => ({
+        const datosPendientes = cliente.map(cliente => ({
             id: cliente._id,
             usuario: cliente.username,
             datosPendientes: cliente.datosPendientes
@@ -435,5 +454,5 @@ export const getDatosPendientes = async (req, res) => {
             error: error.message
         });
     }
-    
+
 }
