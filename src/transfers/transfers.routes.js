@@ -9,6 +9,7 @@ import {
   getTransferById,
   getNumeroTotalTransferencias,
   getUltimaTransferencia,
+  getTransferenciaPorMoneda
 } from "./transfer.controller.js";
 
 const router = Router();
@@ -37,6 +38,12 @@ router.get(
   "/ultima",
   validarJWT,
   getUltimaTransferencia
+);
+
+router.get(
+  "/por-moneda",
+  validarJWT,
+  getTransferenciaPorMoneda
 );
 
 router.get(
