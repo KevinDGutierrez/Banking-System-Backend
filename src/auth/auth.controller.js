@@ -509,10 +509,9 @@ export const getIngresosPorUsuarioYPromedio = async (req, res) => {
 export const getVerMisPuntos = async (req, res) => {
     try {
         const usuario = req.user;
-        const puntos = await authUserModel.findOne({ name: usuario._id }).select("name puntos");
+        const punto = await authUserModel.findOne({ puntos : { $gt: 0}, username: usuario._id })
         res.status(200).json({
-            usuario: usuario.name,
-            puntos: puntos.puntos
+            puntos: punto.puntos
         });
     } catch (error) {
         console.log(error);
