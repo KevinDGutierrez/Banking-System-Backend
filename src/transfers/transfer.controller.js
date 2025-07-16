@@ -178,13 +178,30 @@ export const getNumeroTotalTransferencias = async (req = request, res = response
 export const getUltimaTransferencia = async (req = request, res = response) => {
   const usuario = req.user;
   try {
-    
-    const ultimaTransferencia = await Transfer.findOne({  monto: { $gt: 0 }, emisor: usuario._id}).sort({ createdAt: -1 }).limit(1);
+
+    const ultimaTransferencia = await Transfer.findOne({ monto: { $gt: 0 }, emisor: usuario._id }).sort({ createdAt: -1 }).limit(1);
     res.status(200).json({ monto: ultimaTransferencia.monto });
   } catch (error) {
     return res.status(500).json({
       success: false,
       msg: 'Error al obtener la ultima transferencia',
+      error: error.message
+    });
+  }
+}
+
+export const getTransferenciaPorMoneda = async (req = request, res = response) => {
+  try {
+    const resumen = await Transfer.aggregate([
+      { $group: { _id: "$moneda", monto: { $sum: "$monto" } } },
+      { $project: { _id: 0, moneda: "$_id", monto: 1 } }
+    ])
+
+    res.status(200).json(resumen);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      msg: 'Error al obtener la transferencia por moneda',
       error: error.message
     });
   }
