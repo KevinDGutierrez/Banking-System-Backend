@@ -132,7 +132,7 @@ export const getOpciones = async (req, res) => {
 }
 
 export const getNumeroCuentasActivas = async (req, res) => {
-    const usuario = req.user;
+  const usuario = req.user;
   try {
     if (usuario.role !== "ADMIN") {
       return res.status(403).json({ message: "Solo los administradores pueden ver esta seccion" });
@@ -142,5 +142,16 @@ export const getNumeroCuentasActivas = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Error al obtener el numero de cuentas activas", error: error.message });
+  }
+}
+
+export const getListarSaldoPorCuenta = async (req, res) => {
+  const usuario = req.user;
+  try {
+    const cuenta = await accountModel.findOne({ saldo: { $gt: 0 }, propietario: usuario._id });
+    res.status(200).json({ saldo: cuenta.saldo });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Error al obtener el saldo de tu cuenta", error: error.message });
   }
 }
