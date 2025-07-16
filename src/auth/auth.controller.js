@@ -509,10 +509,18 @@ export const getIngresosPorUsuarioYPromedio = async (req, res) => {
 export const getVerMisPuntos = async (req, res) => {
     try {
         const usuario = req.user;
-        const punto = await authUserModel.findOne({ puntos : { $gt: 0}, username: usuario._id })
+
+        const puntos = await authUserModel.findById(usuario._id).select("username puntos");
+
+        if (!puntos) {
+            return res.status(404).json({ msg: "Usuario no encontrado." });
+        }
+
         res.status(200).json({
-            puntos: punto.puntos
+            usuario: puntos.username,
+            puntos: puntos.puntos
         });
+
     } catch (error) {
         console.log(error);
         res.status(500).json({
