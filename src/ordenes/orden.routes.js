@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { check } from "express-validator";
-import { crearOrden, getOrdenesConProductos, getOrdenesConServicios } from "./orden.controller.js";
+import { crearOrden, getOrdenesConProductos, getOrdenesConServicios, getVerMisOrdenes } from "./orden.controller.js";
 import { validarCampos } from "../middlewares/validar-campos.js";
 import { validarJWT } from "../middlewares/validar-jwt.js";
 import { tieneRole } from "../middlewares/validar-roles.js";
@@ -39,5 +39,7 @@ router.get(
     ],
     getOrdenesConServicios
 )
+
+router.get("/getMisOrdenes", validarJWT, getVerMisOrdenes);
 
 export default router;

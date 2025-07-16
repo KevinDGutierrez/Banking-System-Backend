@@ -458,50 +458,67 @@ export const getDatosPendientes = async (req, res) => {
 }
 
 export const getIngresosPorUsuario = async (req, res) => {
-  try {
-    const usuarios = await authUserModel.aggregate([
-      { $match: { role: "CLIENTE" } },
-      {
-        $project: {
-          name: 1,
-          ingresos: 1
-        }
-      }
-    ]);
+    try {
+        const usuarios = await authUserModel.aggregate([
+            { $match: { role: "CLIENTE" } },
+            {
+                $project: {
+                    name: 1,
+                    ingresos: 1
+                }
+            }
+        ]);
 
-    res.status(200).json(usuarios);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ 
-      msg: "Error al obtener los ingresos por usuario", 
-      error: error.message 
-    });
-  }
+        res.status(200).json(usuarios);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: "Error al obtener los ingresos por usuario",
+            error: error.message
+        });
+    }
 };
 
 export const getIngresosPorUsuarioYPromedio = async (req, res) => {
-  try {
-    const [usuarios, promedio] = await Promise.all([
-      authUserModel.aggregate([
-        { $match: { role: "CLIENTE" } },
-        { $project: { name: 1, ingresos: 1 } }
-      ]),
-      authUserModel.aggregate([
-        { $match: { role: "CLIENTE" } },
-        { $group: { _id: null, promedio: { $avg: "$ingresos" } } }
-      ])
-    ]);
+    try {
+        const [usuarios, promedio] = await Promise.all([
+            authUserModel.aggregate([
+                { $match: { role: "CLIENTE" } },
+                { $project: { name: 1, ingresos: 1 } }
+            ]),
+            authUserModel.aggregate([
+                { $match: { role: "CLIENTE" } },
+                { $group: { _id: null, promedio: { $avg: "$ingresos" } } }
+            ])
+        ]);
 
-    res.status(200).json({
-      usuarios,
-      promedio: promedio[0]?.promedio || 0
-    });
+        res.status(200).json({
+            usuarios,
+            promedio: promedio[0]?.promedio || 0
+        });
 
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ 
-      msg: "Error al obtener los ingresos", 
-      error: error.message 
-    });
-  }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: "Error al obtener los ingresos",
+            error: error.message
+        });
+    }
+};
+
+export const getVerMisPuntos = async (req, res) => {
+    try {
+        const usuario = req.user;
+        const puntos = await authUserModel.findOne({ username: usuario.name }).select("puntos");
+        res.status(200).json({
+            usuario: usuario.name,
+            puntos: puntos.puntos
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: "Error al obtener los puntos",
+            error: error.message
+        });
+    }
 };

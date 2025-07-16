@@ -205,3 +205,22 @@ export const getOrdenesConServicios = async (req, res) => {
         })
     }
 }
+
+export const getVerMisOrdenes = async (req, res) => {
+    try {
+        const usuario = req.user;
+        const ordenes = await Orden.find({ cliente: usuario._id }).populate("cliente", "username correo");
+        res.status(200).json({
+            usuario: usuario.username,
+            totalOrdenes: ordenes.length,
+            ordenes
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            msg: "Error al obtener las órdenes",
+            error: error.message
+        })
+    }
+}
