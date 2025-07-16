@@ -109,6 +109,7 @@ export const getTransfers = async (req = request, res = response) => {
       Transfer.find()
         .populate('emisor', 'username')
         .populate('receptor', 'username')
+        .populate('cuentaReceptor', 'numeroCuenta')
         .skip(Number(desde))
         .limit(Number(limite))
         .sort({ createdAt: -1 })

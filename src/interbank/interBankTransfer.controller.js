@@ -137,7 +137,8 @@ export const getInterbankTransfers = async (req = request, res = response) => {
       InterbankTransfer.countDocuments(),
       InterbankTransfer.find()
         .populate('emisor', 'username')
-        .populate('bancoReceptor', 'nombre')
+        .populate('bancoReceptor', 'name')
+        .populate('cuentaReceptorExterno', 'numeroCuenta')
         .skip(Number(desde))
         .limit(Number(limite))
         .sort({ createdAt: -1 })
