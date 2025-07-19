@@ -140,7 +140,8 @@ export const getOrdenesConProductos = async (req, res) => {
     try {
         const { limite = 10, desde = 0, moneda = 'GTQ' } = req.query;
 
-        const query = { "items.tipo": "producto" };
+        const clienteId = req.user._id; // Usuario autenticado
+        const query = { "items.tipo": "producto", cliente: clienteId };
 
         const [total, ordenesRaw] = await Promise.all([
             Orden.countDocuments(query),
@@ -148,26 +149,26 @@ export const getOrdenesConProductos = async (req, res) => {
                 .populate("cliente", "username correo")
                 .skip(Number(desde))
                 .limit(Number(limite))
-        ])
+        ]);
 
         const ordenes = await Promise.all(ordenesRaw.map(async (ordenDoc) => {
             const orden = ordenDoc.toObject();
             orden.items = await convertirPrecios(orden.items, orden.moneda);
             return orden;
-        }))
+        }));
 
         res.status(200).json({
             success: true,
             total,
             ordenes
-        })
+        });
 
     } catch (error) {
         res.status(500).json({
             success: false,
             msg: "Error al obtener órdenes de productos!",
             error: error.message
-        })
+        });
     }
 }
 
@@ -175,7 +176,8 @@ export const getOrdenesConServicios = async (req, res) => {
     try {
         const { limite = 10, desde = 0, moneda = 'GTQ' } = req.query;
 
-        const query = { "items.tipo": "servicio" };
+        const clienteId = req.user._id; // Usuario autenticado
+        const query = { "items.tipo": "servicio", cliente: clienteId };
 
         const [total, ordenesRaw] = await Promise.all([
             Orden.countDocuments(query),
@@ -183,26 +185,26 @@ export const getOrdenesConServicios = async (req, res) => {
                 .populate("cliente", "username correo")
                 .skip(Number(desde))
                 .limit(Number(limite))
-        ])
+        ]);
 
         const ordenes = await Promise.all(ordenesRaw.map(async (ordenDoc) => {
             const orden = ordenDoc.toObject();
             orden.items = await convertirPrecios(orden.items, orden.moneda);
             return orden;
-        }))
+        }));
 
         res.status(200).json({
             success: true,
             total,
             ordenes
-        })
+        });
 
     } catch (error) {
         res.status(500).json({
             success: false,
             msg: "Error al obtener órdenes de servicios!",
             error: error.message
-        })
+        });
     }
 }
 

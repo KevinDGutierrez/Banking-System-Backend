@@ -18,9 +18,7 @@ const ProductoSchema = Schema({
     existencias: {
         type: Number,
         required: [true, "La cantidad de existencias es requerida!"],
-        max: [100, "El máximo de existentes es 100!"],
-        min: [1, "El mínimo de existentes es 1!"],
-        default: 1
+        max: [100, "El máximo de existentes es 100!"]
     },
 
     // Precio del producto, ya sea "GTQ, USD, EUR"
