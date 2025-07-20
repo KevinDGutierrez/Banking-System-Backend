@@ -1,6 +1,5 @@
 import { encontrarCuenta , validarCuentaUsuario, asignarPuntosPorDepositos} from '../helpers/db-validator-deposit.js'
-import { asignarPuntosPorTransferencias } from '../helpers/db-validator-tranfers.js' // Asumiendo que el helper está en este archivo
-import { obtenerTipoCambio } from '../utils/apiDivisa.js' // Asumiendo que la función está en este archivo
+import { obtenerTipoCambio } from '../utils/apiDivisa.js' 
 import Deposit from '../deposit/deposit.model.js'
 import cuentaModel from '../account/account.model.js'
 
@@ -8,7 +7,6 @@ export const postDeposit = async (req, res) => {
     try {
         const { cuenta, monto, moneda = 'GTQ', descripcion } = req.body;
 
-        // Validaciones básicas
         if (!cuenta || !monto) {
             return res.status(400).json({
                 success: false,
@@ -16,30 +14,25 @@ export const postDeposit = async (req, res) => {
             });
         }
 
-        // Buscar la cuenta existente
         const cuentaExistente = await encontrarCuenta(cuenta);
         const user = await validarCuentaUsuario(cuentaExistente.numeroCuenta);
-
-        // Variables para el depósito
+ 
         let montoFinal = monto;
         let monedaFinal = cuentaExistente.moneda;
         let descripcionFinal = descripcion || '';
-        let tipoCambio = 1;
+        let tipoCambio = 0;
         let conversionInfo = null;
 
-        // Solo realizar conversión si las monedas son diferentes
         if (moneda !== cuentaExistente.moneda) {
             try {
                 tipoCambio = await obtenerTipoCambio(moneda, cuentaExistente.moneda);
                 montoFinal = monto * tipoCambio;
                 
-                // Actualizar descripción con información de conversión
                 const conversionText = `Conversión: ${monto} ${moneda} → ${montoFinal.toFixed(2)} ${cuentaExistente.moneda} (TC: ${tipoCambio})`;
                 descripcionFinal = descripcion ? 
                     `${descripcion} | ${conversionText}` : 
                     `Depósito con ${conversionText}`;
 
-                // Información de conversión para la respuesta
                 conversionInfo = {
                     montoOriginal: monto,
                     monedaOrigen: moneda,
@@ -56,11 +49,9 @@ export const postDeposit = async (req, res) => {
             }
         }
 
-        // Actualizar saldo de la cuenta
         cuentaExistente.saldo += montoFinal;
         await cuentaExistente.save();
 
-        // Crear el registro del depósito
         const newDeposit = new Deposit({
             cuenta: cuentaExistente._id,
             monto: montoFinal,
@@ -70,7 +61,6 @@ export const postDeposit = async (req, res) => {
 
         const savedDeposit = await newDeposit.save();
 
-        // Asignar puntos si existe usuario
         if (user) {
             try {
                 await asignarPuntosPorDepositos(user._id);
@@ -79,7 +69,6 @@ export const postDeposit = async (req, res) => {
             }
         }
 
-        // Preparar respuesta
         const responseData = {
             success: true,
             message: conversionInfo ? 
@@ -219,7 +208,7 @@ export const putDeposit = async (req, res) => {
             }
 
             const diferencia = montoConvertido - depositoActual.monto;
-            cuentaExistente.saldo += diferencia;  // Ajustar el saldo de la cuenta con la diferencia del monto
+            cuentaExistente.saldo += diferencia; 
 
             await cuentaExistente.save();
         }
@@ -227,12 +216,12 @@ export const putDeposit = async (req, res) => {
         const updatedDeposit = await Deposit.findByIdAndUpdate(
             id,
             { 
-                monto: montoConvertido,  // Monto actualizado en GTQ
+                monto: montoConvertido,  
                 descripcion,
-                moneda: 'GTQ'  // Aseguramos que la moneda sea GTQ
+                moneda: 'GTQ'  
             },
             { new: true, runValidators: true }
-        ).populate('cuenta');  // Asegúrate de que el populate se hace correctamente
+        ).populate('cuenta');  
 
         res.json({
             success: true,
@@ -240,7 +229,6 @@ export const putDeposit = async (req, res) => {
             data: updatedDeposit
         });
     } catch (error) {
-        console.error('Error al actualizar depósito:', error);  // Para depuración
         res.status(400).json({
             success: false,
             message: 'Error al actualizar el depósito',
