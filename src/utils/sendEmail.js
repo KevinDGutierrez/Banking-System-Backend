@@ -7,13 +7,13 @@ export const sendApprovalEmail = async (to, nombreCliente) => {
             port: 465,
             secure: true,
             auth: {
-                user: "bancoinnova72@gmail.com",
-                pass: "rmkv dsae ezqg iqgv"
+                user: "ialfasa2020@gmail.com",
+                pass: "boxo hdam qlqc lyqj"
             }
         });
 
         const mailOptions = {
-            from: '"Banco Innova" <bancoinnova72@gmail.com>',
+            from: '"Banco Innova" <ialfasa2020@gmail.com>',
             to,
             subject: "Banco Innova - Aprobación de cuenta",
             text: `Hola ${nombreCliente}, tu cuenta ha sido aprobada por el administrador del banco.`
@@ -36,13 +36,13 @@ export const sendApprovalCuenta = async (to, name, numeroCuenta, tipo) => {
             port: 465,
             secure: true,
             auth: {
-                user: "bancoinnova72@gmail.com",
-                pass: "rmkv dsae ezqg iqgv"
+                user: "ialfasa2020@gmail.com",
+                pass: "boxo hdam qlqc lyqj"
             }
         });
 
         const mailOptions = {
-            from: '"Banco Innova" <bancoinnova72@gmail.com>',
+            from: '"Banco Innova" <ialfasa2020@gmail.com>',
             to,
             subject: "Banco Innova - Aprobación de cuenta",
             text: `Hola ${name}, tu cuenta ${tipo} con el número ${numeroCuenta} ha sido aprobada por el administrador del banco.`
@@ -63,13 +63,13 @@ export const emailCreditoAprovado = async (to, nombreCliente, montoAprobado, mon
             port: 465,
             secure: true,
             auth: {
-                user: "bancoinnova72@gmail.com",
-                pass: "rmkv dsae ezqg iqgv"
+                user: "ialfasa2020@gmail.com",
+                pass: "boxo hdam qlqc lyqj"
             }
         })
 
         const mailOptions = {
-            from: '"Banco Innova" <bancoinnova72@gmail.com>',
+            from: '"Banco Innova" <ialfasa2020@gmail.com>',
             to,
             subject: "Banco Innova - Aprobación de Crédito",
             text: `Hola ${nombreCliente},\n\nTu solicitud de crédito ha sido aprobada. El monto aprobado es de ${montoAprobado} ${moneda}.\n\n¡Gracias por confiar en nuestro sistema!`
@@ -92,13 +92,13 @@ export const emailCreditoNoAprovado = async (to, nombreCliente, moneda) => {
             port: 465,
             secure: true,
             auth: {
-                user: "bancoinnova72@gmail.com",
-                pass: "rmkv dsae ezqg iqgv"
+                user: "ialfasa2020@gmail.com",
+                pass: "boxo hdam qlqc lyqj"
             }
         })
 
         const mailOptions = {
-            from: '"Banco Innova" <bancoinnova72@gmail.com>',
+            from: '"Banco Innova" <ialfasa2020@gmail.com>',
             to,
             subject: "Banco Innova - Aprobación de Crédito",
             text: `Hola ${nombreCliente},\n\nTu solicitud de credito fue denegada. Te informamos que el monto mínimo que puedes solicitar es de ${moneda} 1,000. Además, si solicitas un crédito de esta cantidad, el plazo máximo disponible será de 12 meses.\n\nSi deseas solicitar una cantidad superior, podemos ofrecerte plazos más largos. \n\nNo dudes en ponerte en contacto con nosotros si tienes alguna pregunta o si deseas más información sobre los términos disponibles.\n\nAtentamente,\nBanco Innova`
@@ -121,15 +121,15 @@ export const cambioDeDatos = async (to, nombreCliente, datos) => {
             port: 465,
             secure: true,
             auth: {
-                user: "bancoinnova72@gmail.com",
-                pass: "rmkv dsae ezqg iqgv"
+                user: "ialfasa2020@gmail.com",
+                pass: "boxo hdam qlqc lyqj"
             }
         })
         const cambios = Object.entries(datos)
             .map(([key, value]) => `- ${key}: ${value}`)
             .join('\n');
         const mailOptions = {
-            from: '"Banco Innova" <bancoinnova72@gmail.com>',
+            from: '"Banco Innova" <ialfasa2020@gmail.com>',
             to,
             subject: "Banco Innova - Cambio de datos",
             text: `Hola ${nombreCliente}, \n\nLos datos que se han actualizado son los siguientes: \n\n ${cambios}`
