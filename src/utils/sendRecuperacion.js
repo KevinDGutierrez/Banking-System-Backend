@@ -7,13 +7,13 @@ export const sendResetEmail = async (to, name, text) => {
             port: 465,
             secure: true,
             auth: {
-                user: "bancoinnova72@gmail.com",
-                pass: "rmkv dsae ezqg iqgv"
+                user: "ialfasa2020@gmail.com",
+                pass: "boxo hdam qlqc lyqj"
             }
         });
 
         const mailOptions = {
-            from: '"BancoInnova" <bancoinnova72@gmail.com>',
+            from: '"BancoInnova" <ialfasa2020@gmail.com>',
             to,
             subject: "Banco Innova - Recuperación de cuenta",
             html: `

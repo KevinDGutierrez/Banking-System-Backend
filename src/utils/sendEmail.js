@@ -50,9 +50,10 @@ export const sendApprovalCuenta = async (to, name, numeroCuenta, tipo) => {
 
         console.log(`Enviando correo a ${to}`);
         await transporter.sendMail(mailOptions);
-        console.log("Correo enviado exitosamente"); 
+        console.log("Correo enviado exitosamente");
     } catch (error) {
-
+        console.error("Error al enviar el correo:", error);
+        throw new Error("No se pudo enviar el correo de aprobación");
     }
 }
 
