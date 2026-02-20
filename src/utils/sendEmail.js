@@ -8,7 +8,7 @@ export const sendApprovalEmail = async (to, nombreCliente) => {
             secure: true,
             auth: {
                 user: "ialfasa2020@gmail.com",
-                pass: "boxo hdam qlqc lyqj"
+                pass: "oeie xluh nywe mnun"
             }
         });
 
@@ -37,7 +37,7 @@ export const sendApprovalCuenta = async (to, name, numeroCuenta, tipo) => {
             secure: true,
             auth: {
                 user: "ialfasa2020@gmail.com",
-                pass: "boxo hdam qlqc lyqj"
+                pass: "oeie xluh nywe mnun"
             }
         });
 
@@ -65,7 +65,7 @@ export const emailCreditoAprovado = async (to, nombreCliente, montoAprobado, mon
             secure: true,
             auth: {
                 user: "ialfasa2020@gmail.com",
-                pass: "boxo hdam qlqc lyqj"
+                pass: "oeie xluh nywe mnun"
             }
         })
 
@@ -94,7 +94,7 @@ export const emailCreditoNoAprovado = async (to, nombreCliente, moneda) => {
             secure: true,
             auth: {
                 user: "ialfasa2020@gmail.com",
-                pass: "boxo hdam qlqc lyqj"
+                pass: "oeie xluh nywe mnun"
             }
         })
 
@@ -123,7 +123,7 @@ export const cambioDeDatos = async (to, nombreCliente, datos) => {
             secure: true,
             auth: {
                 user: "ialfasa2020@gmail.com",
-                pass: "boxo hdam qlqc lyqj"
+                pass: "oeie xluh nywe mnun"
             }
         })
         const cambios = Object.entries(datos)
